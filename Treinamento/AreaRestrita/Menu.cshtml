@@ -1,0 +1,52 @@
+﻿@{
+    Page.Title = "Time";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@section head {
+    @RenderPage("~/Estilo/Bootstrap.cshtml")
+}
+
+<body class="d-flex flex-column h-100">
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+        <a class="navbar-brand" href="~/AreaRestrita/Default.cshtml">Copa</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="~/AreaRestrita/Time.cshtml">Times</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/AreaRestrita/Jogo.cshtml">Jogos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/AreaRestrita/Jogador.cshtml">Jogadores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/AreaRestrita/Participacao.cshtml">Participação</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/AreaRestrita/Classificacao.cshtml">Classificação</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/AreaRestrita/Artilharia.cshtml">Artilharia</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/Generico/Cadastro/Sistema.cshtml">Sistema</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/Generico/Cadastro/Modulo.cshtml">Modulo</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/Generico/Cadastro/Pagina.cshtml">Pagina</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="~/Generico/Cadastro/Acao.cshtml">Ação</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>

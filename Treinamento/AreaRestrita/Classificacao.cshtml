@@ -1,0 +1,122 @@
+﻿@{
+    Page.Title = "Classificação";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@functions {
+
+    private class Classificacao
+    {
+        public string IdTime { get; set; }
+        public string Nome { get; set; }
+        public string NumeroPontos { get; set; }
+        public string SaldoGols { get; set; }
+        public string GolsMarcados { get; set; }
+    }
+
+    string acao = null;
+    string nome = null;
+    string idTime = null;
+    List<Classificacao> classificacao = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Request.Form["acao"];
+        idTime = Request.Form["idTime"];
+    }
+
+    private void LimpaVariaveis()
+    {
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Vic_Classificacao_Sel";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@idTime", idTime);
+
+        string procedure = GetNomeProcedure("C");
+
+        Dao dao = new Dao();
+
+        dao.ExecutarProcedure(procedure, parametros);
+
+        classificacao = dao.ExecutarProcedureList<Classificacao>(procedure, parametros);
+
+    }
+
+    private void Manutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("IdTime", idTime);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+    }
+}
+
+@{
+
+    AlimentaVariaveis();
+
+    if (acao == "C")
+    {
+        Manutencao();
+    }
+
+    Consulta();
+
+
+}
+
+@section head {
+    @RenderPage("~/Estilo/Bootstrap.cshtml")
+    @RenderPage("~/AreaRestrita/Menu.cshtml")
+}
+
+<body>
+    <form name="form1" method="get">
+        <input type="hidden" name="acao" id="acao" />
+
+        <div class="container">
+            @RenderPage("..\\Estilo\\Bootstrap.cshtml")
+
+            <h1 class="mt-3 ">Classificação</h1>
+
+            <div class="col-6">
+                <table class="table table-bordered mt-5">
+                    <thead>
+                        <tr>
+                            <th scope="col">Equipe</th>
+                            <th scope="col">Pontuação</th>
+                            <th scope="col">Saldo de gols</th>
+                            <th scope="col">Gols Marcados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Classificacao classificacao in classificacao)
+                        {
+                            <tr>
+                                <td>@classificacao.Nome</td>
+                                <td>@classificacao.NumeroPontos</td>
+                                <td>@classificacao.SaldoGols</td>
+                                <td>@classificacao.GolsMarcados</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </form>
+</body>

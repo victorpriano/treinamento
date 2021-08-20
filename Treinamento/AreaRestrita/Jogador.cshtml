@@ -1,0 +1,319 @@
+﻿@{
+    Page.Title = "Jogador";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@using System.Data.SqlClient
+
+@functions {
+
+    private enum View
+    {
+        Index,
+        New,
+        Edit
+    }
+
+    private class Jogador
+    {
+        public string IdJogador { get; set; }
+        public string Nome { get; set; }
+        public string NomeTime { get; set; }
+        public string IdTime { get; set; }
+    }
+
+    private class Time
+    {
+        public string IdTime { get; set; }
+        public string Nome { get; set; }
+    }
+
+    View view = View.Index;
+
+    string acao = null;
+    string idJogador = null;
+    Jogador jogador = null;
+    Time time = null;
+    List<Time> times = null;
+    List<Jogador> jogadores = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Util.ChecaNulo(Request.Form["acao"]);
+        idJogador = Util.ChecaNulo(Request.Form["idJogador"]);
+    }
+
+    private void LimpaVariaveis()
+    {
+        acao = null;
+        idJogador = null;
+        jogador = null;
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Vic_Jogador_Sel";
+            case "I": return "stp_Vic_Jogador_Ins";
+            case "A": return "stp_Vic_Jogador_Upd";
+            case "E": return "stp_Vic_Jogador_Del";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@IdJogador", idJogador);
+
+            string procedure = GetNomeProcedure("C");
+
+            jogadores = new Dao().ExecutarProcedureList<Jogador>(procedure, parametros);
+
+            if(jogadores != null && idJogador != null)
+            {
+                jogador = jogadores.FirstOrDefault();
+            }
+
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+
+    private void ConsultaTimes()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@TipoConsulta", 1);
+
+        string procedure = GetNomeProcedure("C");
+
+        times = new Dao().ExecutarProcedureList<Time>(procedure, parametros);
+
+        if(times != null && times != null)
+        {
+            time = times.FirstOrDefault();
+        }
+    }
+
+    private void DbManutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdJogador", jogador.IdJogador);
+        parametros.Add("@IdTime", jogador.IdTime);
+        parametros.Add("@Nome", jogador.Nome);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+    }
+
+    private void Manutencao()
+    {
+        try
+        {
+            jogador = new Jogador()
+            {
+                IdJogador = Util.ChecaNulo(Request.Form["idJogador"]),
+                IdTime = Util.ChecaNulo(Request.Form["idTime"]),
+                Nome = Util.ChecaNulo(Request.Form["nomeJogador"])
+            };
+
+            DbManutencao();
+
+            LimpaVariaveis();
+
+            Consulta();
+
+            ModelState.AddError("alert-success", "Operação realizada com sucesso");
+            
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+
+    }
+
+    private void SetView()
+    {
+        if(acao == "new" || acao == "I")
+        {
+            view = View.New;
+
+            if(jogador == null)
+            {
+                jogador = new Jogador();
+            }
+        }
+        else if(jogador == null)
+        {
+            view = View.Index;
+        }
+        else if(jogador != null)
+        {
+            view = View.Edit;
+        }
+    }
+
+}
+
+@{
+    AlimentaVariaveis();
+
+    if (acao == "I" || acao == "A" || acao == "E")
+    {
+        Manutencao();
+    }
+
+    if (acao == null || acao == "C")
+    {
+        Consulta();
+    }
+
+    ConsultaTimes();
+
+    SetView();
+
+}
+
+
+@section head {
+    <link href="~/Scripts/Style.css" rel="stylesheet">
+    @RenderPage("~/Estilo/Bootstrap.cshtml")
+    @RenderPage("~/AreaRestrita/Menu.cshtml")
+}
+
+<body>
+
+    <form name="form1" method="post">
+
+        <input type="hidden" name="acao" id="acao" />
+
+        <div class="container">
+            @PageHelper.MakeAlert()
+
+            <div class="header-body mt-md-5">
+
+                <div class="header-body">
+
+                    <div class="row">
+
+                        <div class="col">
+                            <h3>Jogadores</h3>
+                        </div>
+
+                    </div>
+                            <div class="row">
+
+                                <div class="col">
+
+                                    <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+
+                                    @if (view == View.New)
+                                    {
+                                        <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                                    }
+
+                                    @if (view == View.Index)
+                                    {
+                                        <input type="hidden" name="idJogador" />
+                                        if (jogadores != null)
+                                        {
+                                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Adicionar novo</button>
+
+                                            <table class="table table-bordered border-0 mt-md-4">
+
+                                                <thead>
+                                                    <tr>
+                                                        <th>Id</th>
+                                                        <th>Jogador</th>
+                                                        <th>Time</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    @foreach (Jogador item in jogadores)
+                                                    {
+                                                        <tr>
+                                                            <td>@item.IdJogador</td>
+                                                            <td>@item.Nome</td>
+                                                            <td>@item.NomeTime</td>
+                                                            <td class="border-0">
+                                                                <button class="btn btn-secondary" type="button" onclick="editar(@item.IdJogador)">Editar</button>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                    }
+
+                                    @if (view == View.Edit)
+                                    {
+                                        <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                                        <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                                    }
+
+                                </div>
+                            </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col">
+
+                        @if (view == View.New || view == View.Edit)
+                        {
+                                <input type="hidden" name="idJogador" id="idJogador" value="@jogador.IdJogador" />
+
+                                <div class="row">
+
+                                    <div class="col mt-md-3">
+
+                                        <div class="form-group row">
+                                            <label class="mr-2">Nome: </label>
+                                            <input type="text" name="nomeJogador" id="nome" value="@jogador.Nome" />
+                                        </div>
+
+                                        @{
+                                            ConsultaTimes();
+                                        }
+
+                                        <select name="idTime">
+                                            <option>Selecione o time...</option>
+                                            @foreach (Time time in times)
+                                            {
+                                                <option value="" @(@time.IdTime == jogador.IdTime ? "selected" : "" )>@time.Nome</option>
+                                            }
+                                        </select>
+
+                                    </div>
+                                </div>
+                        }
+
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+
+    <script src="~/Scripts/Scripts.js"></script>
+    <script>
+        function editar(idJogador) {
+            document.form1.idJogador.value = idJogador;
+            document.form1.submit();
+        }
+    </script>
+
+</body>

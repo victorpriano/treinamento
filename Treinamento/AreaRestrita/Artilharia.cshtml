@@ -1,0 +1,117 @@
+﻿@{
+    Page.Title = "Artilharia";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@functions {
+    private class Artilharia
+    {
+        public string IdJogador { get; set; }
+        public string IdTime { get; set; }
+        public string NomeJogador { get; set; }
+        public string NomeTime { get; set; }
+        public string QuantidadeGols { get; set; }
+    }
+
+    string acao = null;
+    string idJogador = null;
+    string idTime = null;
+    List<Artilharia> artilharia = null;
+
+    private void AlimetaVariaveis()
+    {
+        acao = Request.Form["acao"];
+        idJogador = Request.Form["idJogador"];
+        idTime = Request.Form["idTime"];
+    }
+
+    private void LimpaVariaveis()
+    {
+        // não necessário
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Vic_Artilharia_Sel";
+
+            default: return null;
+        }
+
+    }
+
+    private void Consulta()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@idJogador", idJogador);
+
+        string procedure = GetNomeProcedure("C");
+
+        Dao dao = new Dao();
+
+        artilharia = dao.ExecutarProcedureList<Artilharia>(procedure, parametros);
+
+    }
+
+    private void Manutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdJogador", idJogador);
+        parametros.Add("@IdTime", idTime);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+    }
+}
+
+@{
+    AlimetaVariaveis();
+
+    if (acao == "C")
+    {
+        Manutencao();
+    }
+
+    Consulta();
+
+}
+
+@section head {
+    <link href="~/Scripts/Style.css" rel="stylesheet" />
+    @RenderPage("~/Estilo/Bootstrap.cshtml")
+    @RenderPage("~/AreaRestrita/Menu.cshtml")
+}
+
+<body>
+        <div class="container">
+            <form name="form1" method="get">
+                <input type="hidden" name="acao" id="acao" />
+
+                    <h1>Artilharia</h1>
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Equipe</th>
+                            <th>Jogador</th>
+                            <th>Gols</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Artilharia artilharia in artilharia)
+                        {
+                            <tr>
+                                <td>@artilharia.NomeTime</td>
+                                <td>@artilharia.NomeJogador</td>
+                                <td>@artilharia.QuantidadeGols</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+
+            </form>
+        </div>
+</body>

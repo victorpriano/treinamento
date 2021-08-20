@@ -1,0 +1,251 @@
+﻿@{
+    Page.Title = "Time";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@functions {
+
+    private enum View
+    {
+        Index,
+        New,
+        Edit
+    }
+
+    private class Time
+    {
+        public string IdTime { get; set; }
+        public string Nome { get; set; }
+    }
+
+    View view = View.Index;
+
+    string acao = null;
+    string idTime = null;
+    string nome = null;
+    Time time = null;
+    List<Time> times = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Util.ChecaNulo(Request.Form["acao"]);
+        idTime = Util.ChecaNulo(Request.Form["idTime"]);
+    }
+
+    private void LimpaVariaveis()
+    {
+        acao = null;
+        idTime = null;
+        time = null;
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Vic_Time_Sel";
+            case "I": return "stp_Vic_Time_Ins";
+            case "A": return "stp_Vic_Time_Upd";
+            case "E": return "stp_Vic_Time_Del";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@IdTime", idTime);
+
+            string procedure = GetNomeProcedure("C");
+
+            times = new Dao().ExecutarProcedureList<Time>(procedure, parametros);
+
+            if (times != null && idTime != null)
+            {
+                time = times.FirstOrDefault();
+            }
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+
+    }
+
+    private void DbManutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdTime", time.IdTime);
+        parametros.Add("@Nome", time.Nome);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+    }
+
+    private void Manutencao()
+    {
+        try
+        {
+            time = new Time()
+            {
+                IdTime = Util.ChecaNulo(Request.Form["idTIme"]),
+                Nome = Util.ChecaNulo(Request.Form["nome"])
+            };
+
+            DbManutencao();
+
+            LimpaVariaveis();
+
+            Consulta();
+
+            ModelState.AddError("alert-success", "Operação realizada com sucesso");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void SetView()
+    {
+        if (acao == "new" || acao == "I")
+        {
+            view = View.New;
+
+            if (time == null)
+            {
+                time = new Time();
+            }
+        }
+        else if (time == null)
+        {
+            view = View.Index;
+        }
+        else if (time != null)
+        {
+            view = View.Edit;
+        }
+    }
+}
+
+@{
+    AlimentaVariaveis();
+
+    if (acao == "I" || acao == "A" || acao == "E")
+    {
+        Manutencao();
+    }
+
+    if (acao == null || acao == "C")
+    {
+        Consulta();
+    }
+
+    SetView();
+
+}
+
+
+@section head {
+    <link href="~/Scripts/Style.css" rel="stylesheet">
+    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
+}
+
+<body>
+    <form name="form1" method="post">
+        <input type="hidden" name="acao" id="acao" />
+
+        @RenderPage("~/AreaRestrita/Menu.cshtml")
+
+    <div class="container">
+        @PageHelper.MakeAlert()
+
+        <div class="header mt-md-5">
+            <div class="header-body">
+                <div class="row">
+                    <div class="col">
+                        <!-- Pretitle -->
+                        <h6 class="header-pretitle">
+                            Copa
+                        </h6>
+
+                        <!-- Title -->
+                        <h1 class="header-title">
+                            @Page.Title
+                        </h1>
+                    </div>
+                    <div class="col">
+                        @if (view == View.Index)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Adicionar novo</button>
+                        }
+
+                        @if (view == View.New)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                        }
+
+                        @if (view == View.Edit)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                        }
+
+                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (view == View.Index)
+        {
+            <input type="hidden" name="idTime" />
+
+            if (times != null)
+            {
+                <table class="table table-bordered border-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Nome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Time item in times)
+                        {
+                            <tr>
+                                <td scope="row">@item.IdTime</td>
+                                <td scope="row">@item.Nome</td>
+                                <td scope="row" class="border-0">
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdTime)">Editar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+
+        @if (view == View.New || view == View.Edit)
+        {
+            <input type="hidden" name="idTime" id="idTime" value="@time.IdTime" />
+
+            <div class="col-1 form-group">
+                <input placeholder="Nome" type="text" name="nome" id="nome" value="@time.Nome" />
+            </div>
+        }
+
+    </div>
+   </form>
+    <script src="~/Scripts/Scripts.js"></script>
+    <script>
+        function editar(idTime) {
+            document.form1.idTime.value = idTime;
+            document.form1.submit();
+        }
+    </script>
+</body>

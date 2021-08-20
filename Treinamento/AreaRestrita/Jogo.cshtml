@@ -1,0 +1,295 @@
+﻿@{
+    Page.Title = "Time";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@using System.Data.SqlClient
+
+@functions {
+
+    private enum View
+    {
+        Index,
+        New,
+        Edit
+    }
+
+    private class Jogo
+    {
+        public string IdJogo { get; set; }
+        public string IdTime1 { get; set; }
+        public string IdTime2 { get; set; }
+        public string NomeTime1 { get; set; }
+        public string NomeTime2 { get; set; }
+        public string Placar1 { get; set; }
+        public string Placar2 { get; set; }
+    }
+
+    private class Time
+    {
+        public string IdTime { get; set; }
+        public string Nome { get; set; }
+    }
+
+    View view = View.Index;
+
+    string acao = null;
+    string idJogo = null;
+    string idTime1 = null;
+    string idTime2 = null;
+    Jogo jogo = null;
+    Time time = null;
+    List<Jogo> jogos = null;
+    List<Time> times = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Util.ChecaNulo(Request.Form["acao"]);
+        idJogo = Util.ChecaNulo(Request.Form["idJogo"]);
+        idTime1 = Util.ChecaNulo(Request.Form["idTime1"]);
+        idTime2 = Util.ChecaNulo(Request.Form["idTime2"]);
+    }
+
+    private void LimpaVariaveis()
+    {
+        acao = null;
+        idJogo = null;
+        idTime1 = null;
+        idTime2 = null;
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Vic_Jogo_Sel";
+            case "I": return "stp_Vic_Jogo_Ins";
+            case "A": return "stp_Vic_Jogo_Upd";
+            case "E": return "stp_Vic_Jogo_Del";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@IdJogo", idJogo);
+
+            string procedure = GetNomeProcedure("C");
+
+            jogos = new Dao().ExecutarProcedureList<Jogo>(procedure, parametros);
+
+            if (jogos != null && idJogo != null)
+            {
+                jogo = jogos.FirstOrDefault();
+            }
+
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+
+    }
+
+    private void ConsultaTimes()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@TipoConsulta", 1);
+
+        string procedure = GetNomeProcedure("C");
+
+        times = new Dao().ExecutarProcedureList<Time>(procedure, parametros);
+
+        if (times != null && times != null)
+        {
+            time = times.FirstOrDefault();
+        }
+    }
+
+    private void DbManutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdJogo", idJogo);
+        parametros.Add("@IdTime1", idTime1);
+        parametros.Add("@IdTime2", idTime2);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+
+    }
+
+    private void Manutencao()
+    {
+        try
+        {
+            jogo = new Jogo()
+            {
+                IdJogo = Util.ChecaNulo(Request.Form["idJogo"]),
+                IdTime1 = Util.ChecaNulo(Request.Form["idTime1"]),
+                IdTime2 = Util.ChecaNulo(Request.Form["idTime2"])
+            };
+
+            DbManutencao();
+
+            LimpaVariaveis();
+
+            Consulta();
+
+            ModelState.AddError("alert-success", "Operação realizada com sucesso");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void SetView()
+    {
+        if(acao == "new" || acao == "I")
+        {
+            view = View.New;
+
+            if(jogo == null)
+            {
+                jogo = new Jogo();
+            }
+
+        }
+        else if(jogo == null)
+        {
+            view = View.Index;
+        }
+    }
+}
+
+
+@{
+    AlimentaVariaveis();
+
+    if (acao == "I" || acao == "A" || acao == "E")
+    {
+        Manutencao();
+    }
+    if(acao == null || acao == "C")
+    {
+        Consulta();
+        ConsultaTimes();
+    }
+
+    SetView();
+    Consulta();
+    ConsultaTimes();
+
+}
+
+
+@section head {
+    @RenderPage("~/Estilo/Bootstrap.cshtml")
+    @RenderPage("~/AreaRestrita/Menu.cshtml")
+}
+
+<body>
+   
+    <form name="form1" method="post">
+
+        <input type="hidden" name="acao" id="acao" />
+
+        <div class="container">
+
+            @PageHelper.MakeAlert()
+
+            <div class="header-body mt-md-5">
+
+                <div class="header-body">
+
+                    <div class="row">
+                        <div class="col">
+                            <h3 class="mt-3">Tabela de jogos</h3>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col">
+
+                            <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+                            
+                            @if (view == View.New)
+                            {
+                                <button class="btn btn-secondary btn-lg align-bottom" type="button" onclick="executarAcao('I')">Incluir</button>
+
+                            }
+
+                            @if (view == View.Index)
+                            {
+                                if (jogos != null)
+                                {
+                                    <button class="btn btn-secondary m-3" type="button" onclick="executarAcao('new')">Adicionar novo</button>
+
+                                    foreach (Jogo item in jogos)
+                                    {
+                                        <table class="table table-bordered ml-2 w-25">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-center font-weight-bold text-uppercase">@item.NomeTime1 @item.Placar1 x @item.Placar2 @item.NomeTime2</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    }
+
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (view == View.New)
+            {
+                if (times != null)
+                {
+                    <input type="hidden" name="idTime" id="idTime" value="@time.IdTime" />
+
+                    <div class="form-group row">
+
+                        <label class="mt-4" for="idTime1">Equipe 1: </label>
+
+                        <select class="custom-select mt-3 ml-3 w-50" name="idTime1">
+                            <option></option>
+                            @foreach (Time time in times)
+                            {
+                                <option value="@time.IdTime">@time.Nome</option>
+                            }
+                        </select>
+
+                    </div>
+
+                    <div class="form-group row">
+
+                        <label class="mt-4" for="idTime2">Equipe 2: </label>
+
+                        <select class="custom-select mt-3 ml-3 w-50" name="idTime2">
+                            <option></option>
+                            @foreach (Time time in times)
+                            {
+                                <option value="@time.IdTime">@time.Nome</option>
+                            }
+                        </select>
+
+                    </div>
+                }
+            }
+
+        </div>
+    </form>
+
+    <script src="~/Scripts/Scripts.js"></script>
+
+</body>

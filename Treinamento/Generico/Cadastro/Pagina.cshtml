@@ -1,0 +1,398 @@
+﻿@{
+    Page.Title = "Página";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@functions{
+
+    private enum View
+    {
+        Index,
+        New,
+        Edit
+    }
+
+    private class Pagina
+    {
+        public string IdPagina { get; set; }
+        public string CodigoPagina { get; set; }
+        public string DescricaoPagina { get; set; }
+        public string IdModulo { get; set; }
+        public string DescricaoModulo { get; set; }
+        public string IdSistema { get; set; }
+        public string DescricaoSistema { get; set; }
+    }
+
+    View view;
+
+    private class Modulo
+    {
+        public string IdModulo { get; set; }
+        public string IdSistema { get; set; }
+        public string CodigoModulo { get; set; }
+        public string DescricaoModulo { get; set; }
+    }
+
+    private class Sistema
+    {
+        public string IdSistema { get; set; }
+        public string CodigoSistema { get; set; }
+        public string DescricaoSistema { get; set; }
+    }
+
+    string acao = null;
+    string idPagina = null;
+    string idSistema = null;
+    string idModulo = null;
+    string codigoPagina = null;
+    string descricaoPagina = null;
+    string codigoModulo = null;
+    string descricaoModulo = null;
+    string codigoSistema = null;
+    string descricaoSistema = null;
+    Modulo modulo = null;
+    Pagina pagina = null;
+    Sistema sistema = null;
+    List<Sistema> sistemas = null;
+    List<Pagina> paginas = null;
+    List<Modulo> modulos = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Util.ChecaNulo(Request.Form["acao"]);
+        idPagina = Util.ChecaNulo(Request.Form["idPagina"]);
+        idModulo = Util.ChecaNulo(Request.Form["idModulo"]);
+        idSistema = Util.ChecaNulo(Request.Form["idSistema"]);
+
+        if (!string.IsNullOrEmpty(Request.Form["view"]))
+        {
+            view = (View)Enum.Parse(typeof(View), Request.Form["view"]);
+        }
+    }
+
+    private void LimpaVariaveis()
+    {
+        acao = null;
+        idPagina = null;
+        idSistema = null;
+        idModulo = null;
+        pagina = null;
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Sys_Pagina_Sel";
+            case "I": return "stp_Sys_Pagina_Ins";
+            case "A": return "stp_Sys_Pagina_Upd";
+            case "E": return "stp_Sys_Pagina_Del";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@IdPagina", idPagina);
+
+            string procedure = GetNomeProcedure("C");
+
+            paginas = new Dao().ExecutarProcedureList<Pagina>(procedure, parametros);
+
+            if (paginas != null && idPagina != null)
+            {
+                pagina = paginas.FirstOrDefault();
+                idSistema = pagina.IdSistema;
+                idModulo = pagina.IdModulo;
+            }
+
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void ConsultaAux(int tipoConsulta)
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@TipoConsulta", tipoConsulta);
+            parametros.Add("@IdSistema", idSistema);
+
+            string procedure = GetNomeProcedure("C");
+
+            if (tipoConsulta == 1)
+            {
+                sistemas = new Dao().ExecutarProcedureList<Sistema>(procedure, parametros);
+            }
+
+            if (tipoConsulta == 2)
+            {
+                modulos = new Dao().ExecutarProcedureList<Modulo>(procedure, parametros);
+            }
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void DbManutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdPagina", pagina.IdPagina);
+        parametros.Add("@IdModulo", pagina.IdModulo);
+        parametros.Add("@CodigoPagina", pagina.CodigoPagina);
+        parametros.Add("@DescricaoPagina", pagina.DescricaoPagina);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+
+    }
+
+    private void Manutencao()
+    {
+        try
+        {
+            pagina = new Pagina()
+            {
+                IdPagina = Util.ChecaNulo(Request.Form["idPagina"]),
+                IdModulo = Util.ChecaNulo(Request.Form["idModulo"]),
+                CodigoPagina = Util.ChecaNulo(Request.Form["codigoPagina"]),
+                DescricaoPagina = Util.ChecaNulo(Request.Form["descricaoPagina"])
+            };
+
+            DbManutencao();
+
+            LimpaVariaveis();
+            acao = "new";
+
+            Consulta();
+
+            ModelState.AddError("alert-success", "Operação realizada com sucesso");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void SetView()
+    {
+        if (acao == "new" || acao == "I")
+        {
+            view = View.New;
+
+            if (pagina == null)
+            {
+                pagina = new Pagina();
+            }
+        }
+        else if(pagina == null)
+        {
+            view = View.Index;
+        }
+        else if (pagina != null)
+        {
+            view = View.Edit;
+        }
+    }
+}
+
+@{
+    AlimentaVariaveis();
+
+    if (acao == "I" || acao == "A" || acao == "E")
+    {
+        Manutencao();
+    }
+
+    if (acao == null || acao == "C")
+    {
+        if (view != View.Edit)
+        {
+            Consulta();
+        }
+        
+        if (view == View.Edit && idPagina != null)
+        {
+            pagina = new Pagina()
+            {
+                IdPagina = Util.ChecaNulo(Request.Form["idPagina"]),
+                IdModulo = Util.ChecaNulo(Request.Form["idModulo"]),
+                CodigoPagina = Util.ChecaNulo(Request.Form["codigoPagina"]),
+                DescricaoPagina = Util.ChecaNulo(Request.Form["descricaoPagina"])
+            };
+        }
+    }
+
+    SetView();
+}
+
+@section head {
+    <link href="~/Scripts/Style.css" rel="stylesheet">
+    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
+}
+
+<body>
+
+    <form name="form1" method="post">
+        <input type="hidden" name="acao" id="acao" value="@acao" />
+        <input type="hidden" name="view" id="view" value="@((int)view)" />
+
+        @RenderPage("~/AreaRestrita/Menu.cshtml")
+
+    <div class="container">
+        @PageHelper.MakeAlert()
+
+        <div class="header mt-md-5">
+
+            <div class="header-body">
+
+                <div class="row m-xxl-5">
+
+                    <div class="col">
+
+                        <h4 class="header-pretitle mt-4">
+                            @Page.Title
+                        </h4>
+
+                    </div>
+
+                    <div class="col">
+
+                        @if (view == View.Index)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                        }
+
+                        @if (view == View.New)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                        }
+
+                        @if (view == View.Edit)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                        }
+                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @if (view == View.Index)
+        {
+            <input type="hidden" name="idPagina" id="idPagina" />
+
+            if (paginas != null)
+            {
+                <table class="table table-bordered border-0 mt-3">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Sistema</th>
+                            <th scope="col">Módulo</th>
+                            <th scope="col">Pagina</th>
+                            <th scope="col">Descrição</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (Pagina item in paginas)
+                        {
+                            <tr>
+                                <td scope="row">@item.IdPagina</td>
+                                <td scope="row">@item.DescricaoSistema</td>
+                                <td scope="row">@item.DescricaoModulo</td>
+                                <td scope="row">@item.CodigoPagina</td>
+                                <td scope="row">@item.DescricaoPagina</td>
+                                <td scope="row" class="border-0">
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdPagina)">Editar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            }
+        }
+
+        @if (view == View.New || view == View.Edit)
+        {
+            <input type="hidden" name="idPagina" id="idPagina" value="@pagina.IdPagina" />
+
+            <div class="mt-5">
+
+                <label>Sistema</label>
+                <select name="idSistema" onchange="recarregarPagina()">
+                    <option></option>
+                    @{ ConsultaAux(1); }
+                    @if (sistemas != null)
+                    {
+                        foreach (Sistema sistema in sistemas)
+                        {
+                            <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                        }
+                    }
+                </select>
+
+                @if (idSistema != null)
+                {
+                    <label>Modulo</label>
+                    <select name="idModulo" onchange="recarregarPagina()">
+                        <option></option>
+                        @{ ConsultaAux(2); }
+                        @if (modulos != null)
+                        {
+                            foreach (Modulo modulo in modulos)
+                            {
+                                <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
+                            }
+                        }
+                    </select>
+                }
+
+                @if (idModulo != null)
+                {
+                    <label>Página</label>
+                    <input type="text" name="codigoPagina" id="idPagina" value="@pagina.CodigoPagina" />
+                    <label>Descrição</label>
+                    <input type="text" name="descricaoPagina" id="idPagina" value="@pagina.DescricaoPagina" />
+                }
+
+            </div>
+        }
+    </div>
+
+    </form>
+
+    <script src="~/Scripts/Scripts.js"></script>
+
+    <script>
+
+        editar = (idPagina) => {
+            document.form1.idPagina.value = idPagina;
+            document.form1.submit();
+        }
+
+        function recarregarPagina() {
+            document.form1.submit();
+        }
+    </script>
+
+</body>

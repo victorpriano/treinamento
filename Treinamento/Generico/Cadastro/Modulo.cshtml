@@ -1,0 +1,321 @@
+﻿@{
+    Page.Title = "Modulo";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@functions{
+
+    private enum View
+    {
+        Index,
+        New,
+        Edit
+    }
+
+    private class Modulo
+    {
+        public string IdModulo { get; set; }
+        public string IdSistema { get; set; }
+        public string CodigoModulo { get; set; }
+        public string DescricaoModulo { get; set; }
+    }
+
+    private class Sistema
+    {
+        public string IdSistema { get; set; }
+        public string CodigoSistema { get; set; }
+        public string DescricaoSistema { get; set; }
+    }
+
+    View view = View.Index;
+
+    string acao = null;
+    string idModulo = null;
+    Modulo modulo = null;
+    List<Modulo> modulos = null;
+    List<Sistema> sistemas = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Util.ChecaNulo(Request.Form["acao"]);
+        idModulo = Util.ChecaNulo(Request.Form["idModulo"]);
+    }
+
+    private void LimpaVariaveis()
+    {
+        acao = null;
+        idModulo = null;
+        modulo = null;
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Sys_Modulo_Sel";
+            case "I": return "stp_Sys_Modulo_Ins";
+            case "A": return "stp_Sys_Modulo_Upd";
+            case "E": return "stp_Sys_Modulo_Del";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("IdModulo", idModulo);
+
+            string procedure = GetNomeProcedure("C");
+
+            modulos = new Dao().ExecutarProcedureList<Modulo>(procedure, parametros);
+
+            if (modulos != null && idModulo != null)
+            {
+                modulo = modulos.FirstOrDefault();
+            }
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void ConsultaSistemas()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@TipoConsulta", 1);
+
+            string procedure = GetNomeProcedure("C");
+
+            sistemas = new Dao().ExecutarProcedureList<Sistema>(procedure, parametros);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void DbManutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdModulo", modulo.IdModulo);
+        parametros.Add("@IdSistema", modulo.IdSistema);
+        parametros.Add("@CodigoModulo", modulo.CodigoModulo);
+        parametros.Add("@DescricaoModulo", modulo.DescricaoModulo);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+
+    }
+
+    private void Manutencao()
+    {
+        try
+        {
+            modulo = new Modulo()
+            {
+                IdModulo = Util.ChecaNulo(Request.Form["idModulo"]),
+                IdSistema = Util.ChecaNulo(Request.Form["idSistema"]),
+                CodigoModulo = Util.ChecaNulo(Request.Form["codigoModulo"]),
+                DescricaoModulo = Util.ChecaNulo(Request.Form["descricaoModulo"])
+            };
+
+            DbManutencao();
+
+            LimpaVariaveis();
+
+            Consulta();
+
+            ModelState.AddError("alert-success", "Operação realizada com sucesso");
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void SetView()
+    {
+        if (acao == "new" || acao == "I")
+        {
+            view = View.New;
+
+            if (modulo == null)
+            {
+                modulo = new Modulo();
+            }
+        }
+        else if (modulo == null)
+        {
+            view = View.Index;
+        }
+        else if (modulo != null)
+        {
+            view = View.Edit;
+        }
+    }
+}
+
+@{
+    AlimentaVariaveis();
+
+    if (acao == "I" || acao == "A" || acao == "E")
+    {
+        Manutencao();
+    }
+
+    if (acao == null || acao == "C")
+    {
+        Consulta();
+    }
+
+    SetView();
+
+    if (view == View.New || view == View.Edit)
+    {
+        ConsultaSistemas();
+    }
+}
+
+@section head {
+    <link href="~/Scripts/Style.css" rel="stylesheet">
+    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
+}
+
+<body>
+
+    <form name="form1" method="post">
+
+        <input type="hidden" name="acao" id="acao" value="@acao"/>
+
+        @RenderPage("~/AreaRestrita/Menu.cshtml")
+
+    <div class="container">
+        @PageHelper.MakeAlert()
+
+        <div class="header mt-md-5">
+
+            <div class="header-body">
+
+                <div class="row m-xxl-5">
+
+                    <div class="col">
+
+                        <h4 class="header-pretitle mt-4">
+                            @Page.Title
+                        </h4>
+
+                    </div>
+
+                    <div class="col">
+
+                        @if (view == View.Index)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                        }
+
+                        @if (view == View.New)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                        }
+
+                        @if (view == View.Edit)
+                        {
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                            <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                        }
+                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @if (view == View.Index)
+        {
+            <input type="hidden" name="idModulo" id="idModulo" />
+
+            if (modulos != null)
+            {
+                <table class="table table-bordered border-0 mt-3">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Modulo</th>
+                            <th scope="col">Descrição Modulo</th>
+                            <th scope="col">Sistema</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (Modulo item in modulos)
+                        {
+                            <tr>
+                                <td scope="row">@item.IdModulo</td>
+                                <td scope="row">@item.CodigoModulo</td>
+                                <td scope="row">@item.DescricaoModulo</td>
+                                <td scope="row">@item.IdSistema</td>
+                                <td scope="row" class="border-0">
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdModulo)">Editar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            }
+        }
+
+        @if (view == View.New || view == View.Edit)
+        {
+            <input type="hidden" name="idModulo" id="idModulo" value="@modulo.IdModulo" />
+
+            <div class="mt-5">
+                <div class="form-row">
+                    <div class="col-4">
+                        <label for="codigoModulo">Código</label>
+                        <input type="text" name="codigoModulo" id="codigoModulo" value="@modulo.CodigoModulo" class="form-control" />
+                    </div>
+                    <div class="col-4">
+                        <label for="descricaoModulo">Descrição</label>
+                        <input type="text" name="descricaoModulo" id="descricaoModulo" value="@modulo.DescricaoModulo" class="form-control" />
+                    </div>
+                    <div class="col-4">
+                        <label for="">Sistema</label>
+                        <select name="idSistema" id="idSistema" class="form-control">
+                            <option></option>
+                            @foreach (Sistema sistema in sistemas)
+                            {
+                                <option value="@sistema.IdSistema" @(sistema.IdSistema == modulo.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
+        }
+
+    </div>
+    </form>
+
+    <script src="~/Scripts/Scripts.js"></script>
+
+    <script>
+        editar = (idModulo) => {
+            document.form1.idModulo.value = idModulo;
+            document.form1.submit();
+        }
+    </script>
+</body>

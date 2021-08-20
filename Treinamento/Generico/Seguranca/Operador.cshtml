@@ -1,0 +1,294 @@
+﻿@{
+    Page.Title = "Operador";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@functions{
+
+    private enum View
+    {
+        Index,
+        New,
+        Edit
+    }
+
+    private class Operador
+    {
+        public string IdOperador { get; set; }
+        public string Cpf { get; set; }
+        public string Nome { get; set; }
+
+    }
+
+    View view = View.Index;
+
+    string idOperador = null;
+    string acao = null;
+    string cpf = null;
+    string nome = null;
+    Operador operador = null;
+    List<Operador> operadores = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Util.ChecaNulo(Request.Form["acao"]);
+        idOperador = Util.ChecaNulo(Request.Form["idOperador"]);
+    }
+
+    private void LimpaVariaveis()
+    {
+        acao = null;
+        cpf = null;
+        nome = null;
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Sys_Operador_Sel";
+            case "I": return "stp_Sys_Operador_Ins";
+            case "A": return "stp_Sys_Operador_Upd";
+            case "E": return "stp_Sys_Operador_Del";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@IdOperador", idOperador);
+
+            string procedure = GetNomeProcedure("C");
+
+            operadores = new Dao().ExecutarProcedureList<Operador>(procedure, parametros);
+
+            if (operadores != null && idOperador != null)
+            {
+                operador = operadores.FirstOrDefault();
+            }
+
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void DbManutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdOperador", operador.IdOperador);
+        parametros.Add("@Cpf", operador.Cpf);
+        parametros.Add("@Nome", operador.Nome);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+
+    }
+
+    private void Manutencao()
+    {
+        try
+        {
+            operador = new Operador()
+            {
+                IdOperador = Util.ChecaNulo(Request.Form["idOperador"]),
+                Cpf = Util.ChecaNulo(Request.Form["cpf"]),
+                Nome = Util.ChecaNulo(Request.Form["nome"]),
+            };
+
+            DbManutencao();
+
+            LimpaVariaveis();
+
+            Consulta();
+
+            operador = null;
+
+            ModelState.AddError("alert-success", "Operação realizada com sucesso");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void SetView()
+    {
+        if (operador == null && acao == null)
+        {
+            view = View.Index;
+        }
+        else if (acao == "new" || acao == "I")
+        {
+            view = View.New;
+
+            if (operador == null)
+            {
+                operador = new Operador();
+            }
+        }
+        else if (operador != null)
+        {
+            view = View.Edit;
+        }
+
+    }
+
+}
+
+@{
+    AlimentaVariaveis();
+
+    if (acao == "I" || acao == "A" || acao == "E")
+    {
+        Manutencao();
+    }
+
+    if (acao == null || acao == "C")
+    {
+        Consulta();
+    }
+
+    SetView();
+
+}
+
+@section head{
+    <link href="~/Scripts/Style.css" rel="stylesheet">
+    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
+}
+
+    <body>
+
+        <form name="form1" method="post">
+            <input type="hidden" name="acao" id="acao" value="@acao" />
+
+            @RenderPage("~/AreaRestrita/Menu.cshtml")
+
+            <div class="container">
+                 @PageHelper.MakeAlert()
+
+                <div class="header mt-md-5">
+
+                    <div class="header-body">
+
+                        <div class="row m-xxl-5">
+
+                            <div class="col">
+
+                                <h4 class="header-pretitle mt-4">
+                                    @Page.Title
+                                </h4>
+
+                            </div>
+
+                            <div class="col">
+
+                                @if (view == View.Index)
+                                {
+                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                                }
+
+                                @if (view == View.New)
+                                {
+                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('I')" onchange="recarregarPagina()">Incluir</button>
+                                }
+
+                                @if (view == View.Edit)
+                                {
+                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                                }
+                                <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                @if (view == View.Index)
+                {
+                    <input type="hidden" name="idOperador" id="idOperador" />
+
+                    if (operador != null)
+                    {
+                        <table class="table table-bordered border-0 mt-3">
+
+                            <thead>
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Nome</th>
+                                    <th scope="col">Cpf</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (Operador item in operadores)
+                                {
+                                    <tr>
+                                        <td scope="row">@item.IdOperador</td>
+                                        <td scope="row">@item.Nome</td>
+                                        <td scope="row">@item.Cpf</td>
+                                        <td scope="row" class="border-0">
+                                            <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdOperador)">Editar</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+                    }
+                }
+
+                @if (view == View.New)
+                {
+                    <input type="hidden" name="idOperador" id="idOperador" />
+
+                    <label>Nome</label>
+                    <input type="text" name="nome" id="idOperador" value="@operador.Nome" />
+                    <label>Cpf</label>
+                    <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" />
+            
+                }
+
+                @if (view == View.Edit)
+                {
+                    <input type="hidden" name="idOperador" id="idOperador" value="@operador.IdOperador" />
+
+                    <label>Nome</label>
+                    <input type="text" name="nome" id="idOperador" value="@operador.Nome" />
+                    <label>Cpf</label>
+                    <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" />
+                }
+
+            </div>
+
+        </form>
+
+        <script src="~/Scripts/Scripts.js"></script>
+
+        <script>
+
+            editar = (idAcao) => {
+                document.form1.idAcao.value = idAcao;
+                document.form1.submit();
+            }
+
+            function recarregarPagina() {
+                document.form1.action.value = document.form1.action.value;
+                document.form1.submit();
+            }
+
+        </script>
+
+    </body>

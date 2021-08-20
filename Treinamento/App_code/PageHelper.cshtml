@@ -1,0 +1,10 @@
+﻿@helper MakeAlert()
+{
+    foreach (var item in ModelState.Where(x => x.Key.StartsWith("alert-")))
+    {
+        foreach (var item1 in item.Value.Errors)
+        {
+            <div class="alert @item.Key">@item1</div>
+        }
+    }
+}

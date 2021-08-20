@@ -1,0 +1,174 @@
+﻿@{
+    Page.Title = "Participação";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@using System.Data.SqlClient
+
+@functions {
+
+    private class Participacao
+    {
+        public string Equipe { get; set; }
+        public string IdJogador { get; set; }
+        public string NomeJogador { get; set; }
+        public string GolsMarcados { get; set; }
+    }
+
+    private class Jogo
+    {
+        public string IdJogo { get; set; }
+        public string IdTime1 { get; set; }
+        public string IdTime2 { get; set; }
+        public string Time1 { get; set; }
+        public string Time2 { get; set; }
+        public string Placar1 { get; set; }
+        public string Placar2 { get; set; }
+    }
+
+    string acao = null;
+    string idJogo = null;
+    string idJogador = null;
+    List<Participacao> participacao = null;
+    List<Jogo> jogos = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Request.Form["acao"];
+        idJogo = Request.Form["idJogo"];
+        idJogador = Request.Form["idJogador"];
+    }
+
+    private void LimpaVariaveis()
+    {
+        idJogador = null;
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Vic_Participacao_Sel";
+            case "gol": return "stp_Vic_Participacao_Upd";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@idJogo", idJogo);
+
+        string procedure = GetNomeProcedure("C");
+
+        Dao dao = new Dao();
+
+        participacao = dao.ExecutarProcedureList<Participacao>(procedure, parametros);
+
+    }
+
+    private void ConsultaJogos()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@TipoConsulta", 1);
+
+        string procedure = GetNomeProcedure("C");
+
+        jogos = new Dao().ExecutarProcedureList<Jogo>(procedure, parametros);
+    }
+
+    private void Manutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdJogo", idJogo);
+        parametros.Add("@idJogador", idJogador);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+    }
+}
+
+@{
+    AlimentaVariaveis();
+
+    if (acao == "gol")
+    {
+        Manutencao();
+        LimpaVariaveis();
+    }
+
+    Consulta();
+    ConsultaJogos();
+}
+
+
+@section head {
+    @RenderPage("~/Estilo/Bootstrap.cshtml")
+    @RenderPage("~/AreaRestrita/Menu.cshtml")
+}
+
+<body>
+    <form name="form1" method="post">
+        <input type="hidden" name="acao" id="acao" />
+        <input type="hidden" name="idJogador" id="idJogador" />
+
+        <div class="container">
+
+            <h1 class="mt-3">Participação</h1>
+
+            <div>
+                <label for="idJogo">Confrontos: </label>
+                <select class="custom-select mt-3" name="idJogo" onchange="document.form1.submit()">
+                    <option></option>
+                    @foreach (Jogo jogo in jogos)
+                    {
+                        <option value="@jogo.IdJogo" @(jogo.IdJogo == idJogo ? "selected" : "")>
+                            Jogo: @jogo.IdJogo - @jogo.Time1 @jogo.Placar1
+                            x @jogo.Placar2 @jogo.Time2
+                        </option>
+                    }
+                </select>
+            </div>
+
+            @if (participacao != null)
+            {
+                <table class="table table-bordered mt-5 border-0">
+                    <thead>
+                        <tr>
+                            <th scope="col">Equipes</th>
+                            <th scope="col">Jogador</th>
+                            <th scope="col">Gols</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Participacao participacao in participacao)
+                        {
+                            <tr>
+                                <td scope="row">@participacao.Equipe</td>
+                                <td scope="row">@participacao.NomeJogador</td>
+                                <td scope="row">@participacao.GolsMarcados</td>
+                                <td class="border-0">
+                                    <button class="btn btn-secondary btn-lg" type="button" onclick="gol(@participacao.IdJogador)">Gol</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else if (idJogo != null)
+            {
+                <div>Nenhum jogador cadastrados para os times dessa partida</div>
+            }
+        </div>
+    </form>
+
+    <script>
+        function gol(idJogador) {
+            document.form1.acao.value = "gol";
+            document.form1.idJogador.value = idJogador;
+            document.form1.submit();
+        }
+    </script>
+</body>
