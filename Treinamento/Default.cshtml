@@ -1,3 +1,13 @@
 ﻿@{
-    Response.Redirect("AreaRestrita/");
+    if (String.IsNullOrEmpty(Convert.ToString(Session["idOperador"])))
+    {
+        Response.Redirect("ControleAcesso/");
+    }
+    else
+    {
+        Response.Redirect("AreaRestrita/");
+
+    }
+
+
 }

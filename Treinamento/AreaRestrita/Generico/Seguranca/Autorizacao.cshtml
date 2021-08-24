@@ -1,0 +1,240 @@
+﻿@{
+    Page.Title = "Autorização";
+    Layout = "~/AreaRestrita/_Layout.cshtml";
+}
+
+@functions{
+    public class Operador
+    {
+        public string IdOperador { get; set; }
+        public string Nome { get; set; }
+    }
+
+    public class Autorizacao
+    {
+        public string IdAcao { get; set; }
+        public string DescricaoSistema { get; set; }
+        public string DescricaoModulo { get; set; }
+        public string DescricaoPagina { get; set; }
+        public string Caption { get; set; }
+        public string IdAutorizacao { get; set; }
+    }
+
+    string acao = null;
+    string idOperador = null;
+    string acoes = null;
+
+    List<Autorizacao> autorizacoes = null;
+    List<Operador> operadores = null;
+
+    private void AlimentaVariaveis()
+    {
+        acao = Util.ChecaNulo(Request.Form["acao"]);
+        idOperador = Util.ChecaNulo(Request.Form["idOperador"]);
+        acoes = Util.ChecaNulo(Request.Form["idAcao"]);
+
+    }
+
+    private string GetNomeProcedure(string acao)
+    {
+        switch (acao)
+        {
+            case "C": return "stp_Sys_Autorizacao_Sel";
+            case "A": return "stp_Sys_Autorizacao_Upd";
+
+            default: return null;
+        }
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@IdOperador", idOperador);
+
+            string procedure = GetNomeProcedure("C");
+
+            autorizacoes = new Dao().ExecutarProcedureList<Autorizacao>(procedure, parametros);
+
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void ConsultaAux(int tipoConsulta)
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@TipoConsulta", tipoConsulta);
+
+            string procedure = GetNomeProcedure("C");
+
+            if(tipoConsulta == 1)
+            {
+                operadores = new Dao().ExecutarProcedureList<Operador>(procedure, parametros);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void DbManutencao()
+    {
+        Dictionary<string, object> parametros = new Dictionary<string, object>();
+        parametros.Add("@IdOperador", idOperador);
+        parametros.Add("@Acoes", acoes);
+
+        string procedure = GetNomeProcedure(acao);
+
+        new Dao().ExecutarProcedure(procedure, parametros);
+
+    }
+
+    private void Manutencao()
+    {
+        try
+        {
+            DbManutencao();
+
+            Consulta();
+
+            ModelState.AddError("alert-success", "Operação realizada com sucesso");
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+}
+
+@{
+
+    AlimentaVariaveis();
+
+    if (acao == "A")
+    {
+        Manutencao();
+    }
+
+    if (acao == "C")
+    {
+        Consulta();      
+    }
+
+
+}
+
+@section head{
+    <link href="~/Scripts/Style.css" rel="stylesheet">
+    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
+}
+
+<body>
+
+    <form name="form1" method="post">
+
+        <input type="hidden" name="acao" id="acao" />
+
+        @RenderPage("~/AreaRestrita/Menu.cshtml")
+
+    <div class="container">
+        @PageHelper.MakeAlert()
+
+        <div class="header mt-md-5">
+
+            <div class="header-body">
+
+                <div class="row m-xxl-5">
+
+                    <div class="col">
+
+                        <h4 class="header-pretitle mt-4">
+                            @Page.Title
+                        </h4>
+
+                    </div>
+
+                    <div class="col">
+                        <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Incluir</button>
+                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+            <label>Operador</label>
+            <select name="idOperador" onchange="executarAcao('C')" class="form-control">
+                <option></option>
+                @{ ConsultaAux(1); }
+                @foreach (Operador operador in operadores)
+                {
+                    <option value="@operador.IdOperador" @(idOperador == operador.IdOperador ? "selected" : "")>@operador.Nome</option>
+                }
+            </select>
+
+            @if (idOperador != null)
+            {
+
+                <table class="table table-bordered border-0 mt-3">
+
+                    <thead>
+                        <tr>
+                            <th scope="col">Sistema</th>
+                            <th scope="col">Modulo</th>
+                            <th scope="col">Página</th>
+                            <th scope="col">Ação</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @if (autorizacoes != null)
+                        {
+
+                            foreach (Autorizacao item in autorizacoes)
+                            {
+                                <tr>
+                                    <td scope="row">@item.DescricaoSistema</td>
+                                    <td scope="row">@item.DescricaoModulo</td>
+                                    <td scope="row">@item.DescricaoPagina</td>
+                                    <td scope="row">@item.Caption</td>
+                                    <td scope="row" class="border-0">
+                                        <input value="@item.IdAcao" name="idAcao" type="checkbox" @(item.IdAutorizacao != null ? "checked" : "") />
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+                    </tbody>
+
+                </table>
+            }
+
+    </div>
+
+    </form>
+
+    <script src="~/Scripts/Scripts.js"></script>
+
+    <script>
+        editar = (idSistema) => {
+            document.form1.idSistema.value = idSistema;
+            document.form1.submit();
+        }
+    </script>
+
+</body>

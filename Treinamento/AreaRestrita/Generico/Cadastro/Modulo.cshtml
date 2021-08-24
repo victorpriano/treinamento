@@ -1,14 +1,24 @@
 ﻿@{
-    Page.Title = "Sistema";
+    Page.Title = "Modulo";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
 
 @functions{
+
     private enum View
     {
         Index,
         New,
         Edit
+    }
+
+    private class Modulo
+    {
+        public string IdModulo { get; set; }
+        public string IdSistema { get; set; }
+        public string DescricaoSistema { get; set; }
+        public string CodigoModulo { get; set; }
+        public string DescricaoModulo { get; set; }
     }
 
     private class Sistema
@@ -21,36 +31,32 @@
     View view = View.Index;
 
     string acao = null;
-    string idSistema = null;
-    string codigoSistema = null;
-    string descricaoSistema = null;
-    Sistema sistema = null;
+    string idModulo = null;
+    Modulo modulo = null;
+    List<Modulo> modulos = null;
     List<Sistema> sistemas = null;
 
     private void AlimentaVariaveis()
     {
         acao = Util.ChecaNulo(Request.Form["acao"]);
-        idSistema = Util.ChecaNulo(Request.Form["idSistema"]);
-        codigoSistema = Util.ChecaNulo(Request.Form["codigoSistema"]);
-        descricaoSistema = Util.ChecaNulo(Request.Form["descricaoSistema"]);
+        idModulo = Util.ChecaNulo(Request.Form["idModulo"]);
     }
 
     private void LimpaVariaveis()
     {
         acao = null;
-        idSistema = null;
-        codigoSistema = null;
-        descricaoSistema = null;
+        idModulo = null;
+        modulo = null;
     }
 
     private string GetNomeProcedure(string acao)
     {
         switch (acao)
         {
-            case "C": return "stp_Sys_Sistema_Sel";
-            case "I": return "stp_Sys_Sistema_Ins";
-            case "A": return "stp_Sys_Sistema_Upd";
-            case "E": return "stp_Sys_Sistema_Del";
+            case "C": return "stp_Sys_Modulo_Sel";
+            case "I": return "stp_Sys_Modulo_Ins";
+            case "A": return "stp_Sys_Modulo_Upd";
+            case "E": return "stp_Sys_Modulo_Del";
 
             default: return null;
         }
@@ -61,21 +67,36 @@
         try
         {
             Dictionary<string, object> parametros = new Dictionary<string, object>();
-            parametros.Add("IdSistema", idSistema);
+            parametros.Add("IdModulo", idModulo);
+
+            string procedure = GetNomeProcedure("C");
+
+            modulos = new Dao().ExecutarProcedureList<Modulo>(procedure, parametros);
+
+            if (modulos != null && idModulo != null)
+            {
+                modulo = modulos.FirstOrDefault();
+            }
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+
+    private void ConsultaSistemas()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@TipoConsulta", 1);
 
             string procedure = GetNomeProcedure("C");
 
             sistemas = new Dao().ExecutarProcedureList<Sistema>(procedure, parametros);
-
-            if (sistemas != null && idSistema != null)
-            {
-                sistema = sistemas.FirstOrDefault();
-            }
-
         }
         catch (Exception ex)
         {
-
             ModelState.AddError("alert-danger", ex.Message);
         }
     }
@@ -83,35 +104,36 @@
     private void DbManutencao()
     {
         Dictionary<string, object> parametros = new Dictionary<string, object>();
-        parametros.Add("IdSistema", sistema.IdSistema);
-        parametros.Add("CodigoSistema", sistema.CodigoSistema);
-        parametros.Add("DescricaoSistema", sistema.DescricaoSistema);
+        parametros.Add("@IdModulo", modulo.IdModulo);
+        parametros.Add("@IdSistema", modulo.IdSistema);
+        parametros.Add("@CodigoModulo", modulo.CodigoModulo);
+        parametros.Add("@DescricaoModulo", modulo.DescricaoModulo);
 
         string procedure = GetNomeProcedure(acao);
 
         new Dao().ExecutarProcedure(procedure, parametros);
+
     }
 
     private void Manutencao()
     {
         try
         {
-            sistema = new Sistema()
+            modulo = new Modulo()
             {
+                IdModulo = Util.ChecaNulo(Request.Form["idModulo"]),
                 IdSistema = Util.ChecaNulo(Request.Form["idSistema"]),
-                CodigoSistema = Util.ChecaNulo(Request.Form["codigoSistema"]),
-                DescricaoSistema = Util.ChecaNulo(Request.Form["descricaoSistema"])
+                CodigoModulo = Util.ChecaNulo(Request.Form["codigoModulo"]),
+                DescricaoModulo = Util.ChecaNulo(Request.Form["descricaoModulo"])
             };
 
             DbManutencao();
 
-
-            Consulta();
-            
             LimpaVariaveis();
 
+            Consulta();
+
             ModelState.AddError("alert-success", "Operação realizada com sucesso");
-            
         }
         catch (Exception ex)
         {
@@ -126,16 +148,16 @@
         {
             view = View.New;
 
-            if (sistema == null)
+            if (modulo == null)
             {
-                sistema = new Sistema();
+                modulo = new Modulo();
             }
         }
-        else if(sistema == null)
+        else if (modulo == null)
         {
             view = View.Index;
         }
-        else if(sistema != null)
+        else if (modulo != null)
         {
             view = View.Edit;
         }
@@ -148,7 +170,6 @@
     if (acao == "I" || acao == "A" || acao == "E")
     {
         Manutencao();
-
     }
 
     if (acao == null || acao == "C")
@@ -157,6 +178,11 @@
     }
 
     SetView();
+
+    if (view == View.New || view == View.Edit)
+    {
+        ConsultaSistemas();
+    }
 }
 
 @section head {
@@ -165,9 +191,10 @@
 }
 
 <body>
+
     <form name="form1" method="post">
 
-        <input type="hidden" name="acao" id="acao" />
+        <input type="hidden" name="acao" id="acao" value="@acao"/>
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
@@ -188,7 +215,7 @@
 
                     </div>
 
-                    <div class="col mx-md-4">
+                    <div class="col">
 
                         @if (view == View.Index)
                         {
@@ -199,7 +226,7 @@
                         {
                             <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
                         }
-                        
+
                         @if (view == View.Edit)
                         {
                             <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
@@ -217,29 +244,31 @@
 
         @if (view == View.Index)
         {
-            <input type="hidden" name="idSistema"/>
+            <input type="hidden" name="idModulo" id="idModulo" />
 
-            if(sistemas != null)
-            { 
-                <table class="table table-bordered border-0">
+            if (modulos != null)
+            {
+                <table class="table table-bordered border-0 mt-3">
 
                     <thead>
                         <tr>
                             <th scope="col">Id</th>
-                            <th scope="col">Código</th>
-                            <th scope="col">Descrição</th>
+                            <th scope="col">Modulo</th>
+                            <th scope="col">Descrição Modulo</th>
+                            <th scope="col">Sistema</th>
                         </tr>
                     </thead>
 
                     <tbody>
-                        @foreach (Sistema item in sistemas)
+                        @foreach (Modulo item in modulos)
                         {
                             <tr>
-                                <td scope="row">@item.IdSistema</td>
-                                <td scope="row">@item.CodigoSistema</td>
+                                <td scope="row">@item.IdModulo</td>
+                                <td scope="row">@item.CodigoModulo</td>
+                                <td scope="row">@item.DescricaoModulo</td>
                                 <td scope="row">@item.DescricaoSistema</td>
                                 <td scope="row" class="border-0">
-                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdSistema)">Editar</button>
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdModulo)">Editar</button>
                                 </td>
                             </tr>
                         }
@@ -249,14 +278,37 @@
             }
         }
 
-        @if(view == View.New || view == View.Edit)
-        { 
-            <input type="hidden" name="idSistema" id="idSistema" value="@sistema.IdSistema" />
-            
-            <label>Código</label>
-            <input type="text" name="codigoSistema" id="idSistema" value="@sistema.CodigoSistema" />
-            <label>Descrição</label>
-            <input type="text" name="descricaoSistema" id="idSistema" value="@sistema.DescricaoSistema" />                
+        @if (view == View.New || view == View.Edit)
+        {
+            <input type="hidden" name="idModulo" id="idModulo" value="@modulo.IdModulo" />
+
+            <div class="mt-3">
+                <div class="form-col">
+
+                    <div class="col-4">
+                        <label for="codigoModulo">Código</label>
+                        <input type="text" name="codigoModulo" id="codigoModulo" value="@modulo.CodigoModulo" class="form-control" />
+                    </div>
+
+                    <div class="col-4 mt-2">
+                        <label for="descricaoModulo">Descrição</label>
+                        <input type="text" name="descricaoModulo" id="descricaoModulo" value="@modulo.DescricaoModulo" class="form-control" />
+                    </div>
+
+                    <div class="col-4 mt-2">
+                        <label for="">Sistema</label>
+                        <select name="idSistema" id="idSistema" class="form-control">
+                            <option></option>
+                            @foreach (Sistema sistema in sistemas)
+                            {
+                                <option value="@sistema.IdSistema" @(sistema.IdSistema == modulo.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+
         }
 
     </div>
@@ -265,10 +317,9 @@
     <script src="~/Scripts/Scripts.js"></script>
 
     <script>
-        editar = (idSistema) => {
-            document.form1.idSistema.value = idSistema;
+        editar = (idModulo) => {
+            document.form1.idModulo.value = idModulo;
             document.form1.submit();
         }
     </script>
 </body>
-

@@ -33,10 +33,13 @@
     {
         acao = Util.ChecaNulo(Request.Form["acao"]);
         idOperador = Util.ChecaNulo(Request.Form["idOperador"]);
+        nome = Util.ChecaNulo(Request.Form["nome"]);
+        cpf = Util.ChecaNulo(Request.Form["cpf"]);
     }
 
     private void LimpaVariaveis()
     {
+        idOperador = null;
         acao = null;
         cpf = null;
         nome = null;
@@ -105,11 +108,9 @@
 
             DbManutencao();
 
-            LimpaVariaveis();
-
             Consulta();
 
-            operador = null;
+            LimpaVariaveis();
 
             ModelState.AddError("alert-success", "Operação realizada com sucesso");
         }
@@ -168,47 +169,46 @@
     <body>
 
         <form name="form1" method="post">
-            <input type="hidden" name="acao" id="acao" value="@acao" />
+
+            <input type="hidden" name="acao" value="@acao" />
 
             @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-            <div class="container">
-                 @PageHelper.MakeAlert()
+        <div class="container">
+            @PageHelper.MakeAlert()
 
-                <div class="header mt-md-5">
+            <div class="header mt-md-5">
 
-                    <div class="header-body">
+                <div class="header-body">
 
-                        <div class="row m-xxl-5">
+                    <div class="row m-xxl-5">
 
-                            <div class="col">
+                        <div class="col">
 
-                                <h4 class="header-pretitle mt-4">
-                                    @Page.Title
-                                </h4>
+                            <h4 class="header-pretitle mt-4">
+                                @Page.Title
+                            </h4>
 
-                            </div>
+                        </div>
 
-                            <div class="col">
+                        <div class="col">
 
-                                @if (view == View.Index)
-                                {
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
-                                }
+                            @if (view == View.Index)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                            }
 
-                                @if (view == View.New)
-                                {
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('I')" onchange="recarregarPagina()">Incluir</button>
-                                }
+                            @if (view == View.New)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('I')" onchange="recarregarPagina()">Incluir</button>
+                            }
 
-                                @if (view == View.Edit)
-                                {
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
-                                }
-                                <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
-
-                            </div>
+                            @if (view == View.Edit)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                            }
+                            <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
 
                         </div>
 
@@ -216,62 +216,58 @@
 
                 </div>
 
-                @if (view == View.Index)
-                {
-                    <input type="hidden" name="idOperador" id="idOperador" />
-
-                    if (operador != null)
-                    {
-                        <table class="table table-bordered border-0 mt-3">
-
-                            <thead>
-                                <tr>
-                                    <th scope="col">Id</th>
-                                    <th scope="col">Nome</th>
-                                    <th scope="col">Cpf</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                @foreach (Operador item in operadores)
-                                {
-                                    <tr>
-                                        <td scope="row">@item.IdOperador</td>
-                                        <td scope="row">@item.Nome</td>
-                                        <td scope="row">@item.Cpf</td>
-                                        <td scope="row" class="border-0">
-                                            <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdOperador)">Editar</button>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-
-                        </table>
-                    }
-                }
-
-                @if (view == View.New)
-                {
-                    <input type="hidden" name="idOperador" id="idOperador" />
-
-                    <label>Nome</label>
-                    <input type="text" name="nome" id="idOperador" value="@operador.Nome" />
-                    <label>Cpf</label>
-                    <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" />
-            
-                }
-
-                @if (view == View.Edit)
-                {
-                    <input type="hidden" name="idOperador" id="idOperador" value="@operador.IdOperador" />
-
-                    <label>Nome</label>
-                    <input type="text" name="nome" id="idOperador" value="@operador.Nome" />
-                    <label>Cpf</label>
-                    <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" />
-                }
-
             </div>
+
+            @if (view == View.Index)
+            {
+                <input type="hidden" name="idOperador" id="idOperador" />
+
+                if (operadores != null)
+                {
+                    <table class="table table-bordered border-0 mt-3">
+
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Cpf</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (Operador item in operadores)
+                            {
+                                <tr>
+                                    <td scope="row">@item.IdOperador</td>
+                                    <td scope="row">@item.Nome</td>
+                                    <td scope="row">@item.Cpf</td>
+                                    <td scope="row" class="border-0">
+                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdOperador)">Editar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                }
+            }
+
+            @if (view == View.New || view == View.Edit)
+            {
+                <input type="hidden" name="idOperador" id="idOperador" value="@operador.IdOperador" />
+
+                <div class="form-col mt-2 w-25">
+
+                    <label>Nome</label>
+                    <input type="text" name="nome" id="idOperador" value="@operador.Nome" class="form-control" />
+                    <label class="mt-2">CPF</label>
+                    <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" class="form-control" />
+
+                </div>
+
+            }
+
+        </div>
 
         </form>
 
@@ -279,8 +275,8 @@
 
         <script>
 
-            editar = (idAcao) => {
-                document.form1.idAcao.value = idAcao;
+            function editar(idOperador) {
+                document.form1.idOperador.value = idOperador;
                 document.form1.submit();
             }
 

@@ -370,49 +370,70 @@
         {
             <input type="hidden" name="idAcao" id="idAcao" />
 
-            <div class="mt-5">
+            <div class="form-col mt-3">
 
-                <label>Sistema</label>
-                <select name="idSistema" onchange="recarregarPagina()">
-                    <option></option>
-                    @foreach (Sistema sistema in sistemas)
-                    {
-                        <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
-                    }
-                </select>
+                <div class="col-4">
+
+                    <label>Sistema</label>
+                    <select name="idSistema" onchange="recarregarPagina()" class="form-control">
+                        <option></option>
+                        @foreach (Sistema sistema in sistemas)
+                        {
+                            <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                        }
+                    </select>
+
+                </div>
+
 
                 @if (idSistema != null)
                 {
-                    <label>Modulo</label>
-                    <select name="idModulo" onchange="recarregarPagina()">
-                        <option></option>
-                        @foreach (Modulo modulo in modulos)
-                        {
-                            <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
-                        }
-                    </select>
+                    <div class="col-4 mt-2">
+
+                        <label>Modulo</label>
+                        <select name="idModulo" onchange="recarregarPagina()" class="form-control">
+                            <option></option>
+                            @foreach (Modulo modulo in modulos)
+                            {
+                                <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
+                            }
+                        </select>
+
+                    </div>
                 }
 
                 @if (idModulo != null)
                 {
-                    <label>Pagina</label>
-                    <select name="idPagina" onchange="recarregarPagina()">
-                        <option></option>
-                        @foreach (Pagina pagina in paginas)
-                        {
-                            <option value="@pagina.IdPagina" @(idPagina == pagina.IdPagina ? "selected" : "")>@pagina.DescricaoPagina</option>
-                        }
-                    </select>
+                    <div class="col-4 mt-2">
+
+                        <label>Pagina</label>
+                        <select name="idPagina" onchange="recarregarPagina()" class="form-control">
+                            <option></option>
+                            @foreach (Pagina pagina in paginas)
+                            {
+                                <option value="@pagina.IdPagina" @(idPagina == pagina.IdPagina ? "selected" : "")>@pagina.DescricaoPagina</option>
+                            }
+                        </select>
+
+                    </div>
                 }
 
                 @if (idPagina != null)
                 {
-                    <label>Ação</label>
-                    <input type="text" name="codigoAcao" id="idAcao" value="@acao.CodigoAcao" />
-                    <label>Caption</label>
-                    <input type="text" name="caption" id="idAcao" value="@acao.Caption" />
-                    <label>Procedure</label>
-                    <input type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" />
+                    <div class="form-col mt-3">
+
+                        <div class="col-4">
+
+                            <label>Ação</label>
+                            <input type="text" name="codigoAcao" id="idAcao" value="@acao.CodigoAcao" class="form-control" />
+                            <label class="mt-2">Caption</label>
+                            <input type="text" name="caption" id="idAcao" value="@acao.Caption" class="form-control" />
+                            <label class="mt-2">Procedure</label>
+                            <input type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" class="form-control mb-3" />
+
+                        </div>
+
+                    </div>
                 }
 
             </div>
@@ -423,7 +444,7 @@
             <input type="hidden" name="idAcao" id="idAcao" value="@acao.IdAcao" />
 
             <label>Sistema</label>
-            <select name="idSistema">
+            <select name="idSistema" class="form-control">
                 <option></option>
                 @foreach (Sistema sistema in sistemas)
                 {
@@ -432,7 +453,7 @@
             </select>
 
             <label>Modulo</label>
-            <select name="idModulo">
+            <select name="idModulo" class="form-control">
                 <option></option>
                 @foreach (Modulo modulo in modulos)
                 {
@@ -441,7 +462,7 @@
             </select>
 
             <label>Descrição Página</label>
-            <select name="idPagina">
+            <select name="idPagina" class="form-control">
                 <option></option>
                 @foreach (Pagina pagina in paginas)
                 {

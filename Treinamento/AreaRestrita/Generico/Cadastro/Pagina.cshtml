@@ -336,44 +336,61 @@
         {
             <input type="hidden" name="idPagina" id="idPagina" value="@pagina.IdPagina" />
 
-            <div class="mt-5">
+            <div class="mt-3">
 
-                <label>Sistema</label>
-                <select name="idSistema" onchange="recarregarPagina()">
-                    <option></option>
-                    @{ ConsultaAux(1); }
-                    @if (sistemas != null)
-                    {
-                        foreach (Sistema sistema in sistemas)
-                        {
-                            <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
-                        }
-                    }
-                </select>
+                <div class="form-col">
 
-                @if (idSistema != null)
-                {
-                    <label>Modulo</label>
-                    <select name="idModulo" onchange="recarregarPagina()">
-                        <option></option>
-                        @{ ConsultaAux(2); }
-                        @if (modulos != null)
-                        {
-                            foreach (Modulo modulo in modulos)
+                    <div class="col-4">
+
+                        <label>Sistema</label>
+                        <select name="idSistema" onchange="recarregarPagina()" class="form-control">
+                            <option></option>
+                            @{ ConsultaAux(1); }
+                            @if (sistemas != null)
                             {
-                                <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
+                                foreach (Sistema sistema in sistemas)
+                                {
+                                    <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                                }
                             }
-                        }
-                    </select>
-                }
+                        </select>
 
-                @if (idModulo != null)
-                {
-                    <label>Página</label>
-                    <input type="text" name="codigoPagina" id="idPagina" value="@pagina.CodigoPagina" />
-                    <label>Descrição</label>
-                    <input type="text" name="descricaoPagina" id="idPagina" value="@pagina.DescricaoPagina" />
-                }
+                    </div>
+
+                    @if (idSistema != null)
+                    {
+                        <div class="col-4">
+
+                            <label class="mt-2">Modulo</label>
+                            <select name="idModulo" onchange="recarregarPagina()" class="form-control">
+                                <option></option>
+                                @{ ConsultaAux(2); }
+                                @if (modulos != null)
+                                {
+                                    foreach (Modulo modulo in modulos)
+                                    {
+                                        <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
+                                    }
+                                }
+                            </select>
+
+                        </div>
+                    }
+
+                    @if (idModulo != null)
+                    {
+                        <div class="col-12 mt-3">
+
+                            <label>Página</label>
+                            <input type="text" name="codigoPagina" id="idPagina" value="@pagina.CodigoPagina" class="form-control w-25" />
+                            <label class="mt-2">Descrição</label>
+                            <input type="text" name="descricaoPagina" id="idPagina" value="@pagina.DescricaoPagina" class="form-control w-25" />
+
+                        </div>
+                    }
+
+                </div>
+
 
             </div>
         }

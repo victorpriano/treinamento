@@ -1,5 +1,5 @@
 ﻿function estadoInicial() {
-    var els = document.form1.querySelectorAll("input");
+    var els = document.form1.querySelectorAll("input, select");
     if (els != null) {
         els.forEach(function (item) {
             var type = item.type;

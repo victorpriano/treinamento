@@ -1,8 +1,86 @@
-﻿@{
-    Page.Title = "Controle de Acesso";
-    Layout = "~/ControleAcesso/_Layout.cshtml";
+﻿@{ Page.Title = "Controle de Acesso";
+    Layout = "~/ControleAcesso/_Layout.cshtml"; }
+
+@functions{
+
+    private class Operador
+    {
+        public string IdOperador { get; set; }
+        public string Nome { get; set; }
+    }
+
+    string cpf = null;
+    string senha = null;
+    bool loginOk = false;
+    Operador operador = null;
+
+
+    private void AlimentaVariaveis()
+    {
+        cpf = Request.Form["cpf"];
+        senha = Request.Form["senha"];
+    }
+
+    private void AbreSessao()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@cpf", cpf);
+            parametros.Add("@senha", senha);
+
+            List<Operador> operadores = new Dao().ExecutarProcedureList<Operador>("stp_Sys_AbreSessao", parametros);
+
+            if (operadores != null)
+            {
+                operador = operadores[0];
+                Session["IdOperador"] = operador.IdOperador;
+
+                loginOk = true;
+            }
+            else
+            {
+                ModelState.AddError("alert-danger", "Não autorizado");
+            }
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    } }
+
+@{ AlimentaVariaveis();
+
+    if (IsPost)
+    {
+        AbreSessao();
+    } }
+
+@section meta
+{
+    @if (loginOk)
+    {
+        <meta http-equiv="refresh" content="2;url=/" />
+    }
 }
 
 <body>
-    <h1>Controle de acesso</h1>
+    <h1>Login</h1>
+
+    @PageHelper.MakeAlert()
+
+    @if (loginOk)
+    {
+        <h1>Login realizado com sucesso</h1>
+        <h2>Seja bem vindo, @operador.Nome</h2>
+    }
+    else
+    {
+        <form name="form1" method="post">
+            <input placeholder="cpf" name="cpf" />
+            <input placeholder="senha" type="password" name="senha" />
+            <button>Logar</button>
+        </form>
+    }
+
 </body>

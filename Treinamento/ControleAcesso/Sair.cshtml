@@ -1,0 +1,21 @@
+﻿@{ Page.Title = "Sair";
+                Layout = "~/ControleAcesso/_Layout.cshtml"; }
+
+@functions{ private void Sair()
+            {
+                if (!string.IsNullOrEmpty(Convert.ToString(Session["IdOperador"])))
+                {
+                    Session["IdOperador"] = null;
+                }
+            } }
+
+@{ Sair(); }
+
+@section meta
+{
+    <meta http-equiv="refresh" content="2;url=/" />
+}
+
+<body>
+    <h1>Saída Efetuada com sucesso</h1>
+</body>

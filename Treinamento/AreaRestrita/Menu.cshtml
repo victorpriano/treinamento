@@ -3,6 +3,50 @@
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
 
+@functions{
+
+    private class Menu
+    {
+        public string CodigoSistema { get; set; }
+        public string DescricaoSistema { get; set; }
+        public string CodigoModulo { get; set; }
+        public string DescricaoModulo { get; set; }
+        public string CodigoPagina { get; set; }
+        public string DescricaoPagina { get; set; }
+    }
+
+    List<Menu> menus = null;
+
+    string idOperador = null;
+
+    private void AlimentaVariaveis()
+    {
+        idOperador = Convert.ToString(Session["idOperador"]);
+    }
+
+    private void Consulta()
+    {
+        try
+        {
+            Dictionary<string, object> parametros = new Dictionary<string, object>();
+            parametros.Add("@IdOperador", idOperador);
+
+            menus = new Dao().ExecutarProcedureList<Menu>("stp_Sys_MontaMenu", parametros);
+
+        }
+        catch (Exception ex)
+        {
+
+            ModelState.AddError("alert-danger", ex.Message);
+        }
+    }
+}
+
+@{ 
+    AlimentaVariaveis();
+    Consulta();
+}
+
 @section head {
     @RenderPage("~/Estilo/Bootstrap.cshtml")
 }
@@ -16,37 +60,18 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="~/AreaRestrita/Time.cshtml">Times</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/AreaRestrita/Jogo.cshtml">Jogos</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/AreaRestrita/Jogador.cshtml">Jogadores</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/AreaRestrita/Participacao.cshtml">Participação</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/AreaRestrita/Classificacao.cshtml">Classificação</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/AreaRestrita/Artilharia.cshtml">Artilharia</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/Generico/Cadastro/Sistema.cshtml">Sistema</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/Generico/Cadastro/Modulo.cshtml">Modulo</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/Generico/Cadastro/Pagina.cshtml">Pagina</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="~/Generico/Cadastro/Acao.cshtml">Ação</a>
-                </li>
+                @if (menus != null)
+                {
+                    foreach (Menu menu in menus)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" href="~/AreaRestrita/@(menu.CodigoSistema)/@(menu.CodigoModulo)/@(menu.CodigoPagina).cshtml">@menu.DescricaoPagina</a>
+                        </li>
+                    }
+                }
             </ul>
         </div>
+
+        <a href="~/ControleAcesso/Sair.cshtml">Sair</a>
     </nav>
 </body>
