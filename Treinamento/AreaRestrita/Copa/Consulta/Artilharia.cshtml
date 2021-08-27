@@ -1,4 +1,6 @@
-﻿@{
+﻿@RenderPage("~/AreaRestrita/Seguranca.cshtml")
+
+@{
     Page.Title = "Artilharia";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
@@ -78,40 +80,37 @@
 
 }
 
-@section head {
-    <link href="~/Scripts/Style.css" rel="stylesheet" />
-    @RenderPage("~/Estilo/Bootstrap.cshtml")
-    @RenderPage("~/AreaRestrita/Menu.cshtml")
-}
+
 
 <body>
-        <div class="container">
-            <form name="form1" method="get">
-                <input type="hidden" name="acao" id="acao" />
+    @RenderPage("~/AreaRestrita/Menu.cshtml")
+    <div class="container">
+        <form name="form1" method="get">
+            <input type="hidden" name="acao" id="acao" />
 
-                    <h1>Artilharia</h1>
+            <h1>Artilharia</h1>
 
-                <table class="table table-bordered">
-                    <thead>
+            <table class="mt-5 table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Equipe</th>
+                        <th>Jogador</th>
+                        <th>Gols</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Artilharia artilharia in artilharia)
+                    {
                         <tr>
-                            <th>Equipe</th>
-                            <th>Jogador</th>
-                            <th>Gols</th>
+                            <td>@artilharia.NomeTime</td>
+                            <td>@artilharia.NomeJogador</td>
+                            <td>@artilharia.QuantidadeGols</td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (Artilharia artilharia in artilharia)
-                        {
-                            <tr>
-                                <td>@artilharia.NomeTime</td>
-                                <td>@artilharia.NomeJogador</td>
-                                <td>@artilharia.QuantidadeGols</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                    }
+                </tbody>
+            </table>
 
 
-            </form>
-        </div>
+        </form>
+    </div>
 </body>

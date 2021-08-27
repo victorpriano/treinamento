@@ -1,4 +1,6 @@
-﻿@{
+﻿@RenderPage("~/AreaRestrita/Seguranca.cshtml")
+
+@{
     Page.Title = "Página";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
@@ -196,7 +198,7 @@
                 pagina = new Pagina();
             }
         }
-        else if(pagina == null)
+        else if (pagina == null)
         {
             view = View.Index;
         }
@@ -221,7 +223,7 @@
         {
             Consulta();
         }
-        
+
         if (view == View.Edit && idPagina != null)
         {
             pagina = new Pagina()
@@ -237,11 +239,6 @@
     SetView();
 }
 
-@section head {
-    <link href="~/Scripts/Style.css" rel="stylesheet">
-    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
-}
-
 <body>
 
     <form name="form1" method="post">
@@ -250,41 +247,44 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-    <div class="container">
-        @PageHelper.MakeAlert()
+        <div class="container">
+            @PageHelper.MakeAlert()
 
-        <div class="header mt-md-5">
+            <div class="header mt-md-5">
 
-            <div class="header-body">
+                <div class="header-body">
 
-                <div class="row m-xxl-5">
+                    <div class="row m-xxl-5">
 
-                    <div class="col">
+                        <div class="col">
 
-                        <h4 class="header-pretitle mt-4">
-                            @Page.Title
-                        </h4>
+                            <h4 class="header-pretitle mt-4">
+                                @Page.Title
+                            </h4>
 
-                    </div>
+                        </div>
 
-                    <div class="col">
+                        <div class="col">
 
-                        @if (view == View.Index)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
-                        }
+                            @if (view == View.Index)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                            }
 
-                        @if (view == View.New)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
-                        }
+                            @if (view == View.New)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                            }
 
-                        @if (view == View.Edit)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
-                        }
-                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+                            @if (view == View.Edit)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                            }
+
+                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
+
+                        </div>
 
                     </div>
 
@@ -292,109 +292,107 @@
 
             </div>
 
-        </div>
-
-        @if (view == View.Index)
-        {
-            <input type="hidden" name="idPagina" id="idPagina" />
-
-            if (paginas != null)
+            @if (view == View.Index)
             {
-                <table class="table table-bordered border-0 mt-3">
+                <input type="hidden" name="idPagina" id="idPagina" />
 
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Sistema</th>
-                            <th scope="col">Módulo</th>
-                            <th scope="col">Pagina</th>
-                            <th scope="col">Descrição</th>
-                        </tr>
-                    </thead>
+                if (paginas != null)
+                {
+                    <table class="table table-borderless mt-3">
 
-                    <tbody>
-                        @foreach (Pagina item in paginas)
-                        {
+                        <thead>
                             <tr>
-                                <td scope="row">@item.IdPagina</td>
-                                <td scope="row">@item.DescricaoSistema</td>
-                                <td scope="row">@item.DescricaoModulo</td>
-                                <td scope="row">@item.CodigoPagina</td>
-                                <td scope="row">@item.DescricaoPagina</td>
-                                <td scope="row" class="border-0">
-                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdPagina)">Editar</button>
-                                </td>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Sistema</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Módulo</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Pagina</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Descrição</th>
                             </tr>
-                        }
-                    </tbody>
+                        </thead>
 
-                </table>
-            }
-        }
-
-        @if (view == View.New || view == View.Edit)
-        {
-            <input type="hidden" name="idPagina" id="idPagina" value="@pagina.IdPagina" />
-
-            <div class="mt-3">
-
-                <div class="form-col">
-
-                    <div class="col-4">
-
-                        <label>Sistema</label>
-                        <select name="idSistema" onchange="recarregarPagina()" class="form-control">
-                            <option></option>
-                            @{ ConsultaAux(1); }
-                            @if (sistemas != null)
+                        <tbody>
+                            @foreach (Pagina item in paginas)
                             {
-                                foreach (Sistema sistema in sistemas)
-                                {
-                                    <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
-                                }
+                                <tr>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdPagina</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoSistema</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoModulo</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoPagina</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoPagina</td>
+                                    <td scope="row" class="border-0">
+                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdPagina)">Editar</button>
+                                    </td>
+                                </tr>
                             }
-                        </select>
+                        </tbody>
 
-                    </div>
+                    </table>
+                }
+            }
 
-                    @if (idSistema != null)
-                    {
+            @if (view == View.New || view == View.Edit)
+            {
+                <input type="hidden" name="idPagina" id="idPagina" value="@pagina.IdPagina" />
+
+                <div class="mt-3">
+
+                    <div class="form-col">
+
                         <div class="col-4">
 
-                            <label class="mt-2">Modulo</label>
-                            <select name="idModulo" onchange="recarregarPagina()" class="form-control">
+                            <label>Sistema</label>
+                            <select name="idSistema" onchange="recarregarPagina()" class="form-select mt-2">
                                 <option></option>
-                                @{ ConsultaAux(2); }
-                                @if (modulos != null)
+                                @{ ConsultaAux(1); }
+                                @if (sistemas != null)
                                 {
-                                    foreach (Modulo modulo in modulos)
+                                    foreach (Sistema sistema in sistemas)
                                     {
-                                        <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
+                                        <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
                                     }
                                 }
                             </select>
 
                         </div>
-                    }
 
-                    @if (idModulo != null)
-                    {
-                        <div class="col-12 mt-3">
+                        @if (idSistema != null)
+                        {
+                            <div class="col-4">
 
-                            <label>Página</label>
-                            <input type="text" name="codigoPagina" id="idPagina" value="@pagina.CodigoPagina" class="form-control w-25" />
-                            <label class="mt-2">Descrição</label>
-                            <input type="text" name="descricaoPagina" id="idPagina" value="@pagina.DescricaoPagina" class="form-control w-25" />
+                                <label class="mt-2">Modulo</label>
+                                <select name="idModulo" onchange="recarregarPagina()" class="form-select">
+                                    <option></option>
+                                    @{ ConsultaAux(2); }
+                                    @if (modulos != null)
+                                    {
+                                        foreach (Modulo modulo in modulos)
+                                        {
+                                            <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
+                                        }
+                                    }
+                                </select>
 
-                        </div>
-                    }
+                            </div>
+                        }
+
+                        @if (idModulo != null)
+                        {
+                            <div class="col-12 mt-3">
+
+                                <label>Página</label>
+                                <input type="text" name="codigoPagina" id="idPagina" value="@pagina.CodigoPagina" class="form-control w-25" />
+                                <label class="mt-2">Descrição</label>
+                                <input type="text" name="descricaoPagina" id="idPagina" value="@pagina.DescricaoPagina" class="form-control w-25" />
+
+                            </div>
+                        }
+
+                    </div>
+
 
                 </div>
-
-
-            </div>
-        }
-    </div>
+            }
+        </div>
 
     </form>
 

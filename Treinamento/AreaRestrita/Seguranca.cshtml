@@ -1,0 +1,13 @@
+﻿@functions{
+    private void ValidaSessao()
+    {
+        if (string.IsNullOrEmpty(Convert.ToString(Session["IdOperador"])))
+        {
+            Response.Redirect("/");
+        }
+    }
+}
+
+@{ 
+    ValidaSessao();
+}

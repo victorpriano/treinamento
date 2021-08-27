@@ -1,4 +1,6 @@
-﻿@{
+﻿@RenderPage("~/AreaRestrita/Seguranca.cshtml")
+
+@{
     Page.Title = "Modulo";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
@@ -185,133 +187,129 @@
     }
 }
 
-@section head {
-    <link href="~/Scripts/Style.css" rel="stylesheet">
-    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
-}
 
 <body>
 
     <form name="form1" method="post">
 
-        <input type="hidden" name="acao" id="acao" value="@acao"/>
+        <input type="hidden" name="acao" id="acao" value="@acao" />
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-    <div class="container">
-        @PageHelper.MakeAlert()
+        <div class="container">
+            @PageHelper.MakeAlert()
 
-        <div class="header mt-md-5">
+            <div class="header mt-md-5">
 
-            <div class="header-body">
+                <div class="header-body">
 
-                <div class="row m-xxl-5">
+                    <div class="row m-xxl-5">
 
-                    <div class="col">
+                        <div class="col">
 
-                        <h4 class="header-pretitle mt-4">
-                            @Page.Title
-                        </h4>
+                            <h4 class="header-pretitle mt-4">
+                                @Page.Title
+                            </h4>
 
-                    </div>
+                        </div>
 
-                    <div class="col">
+                        <div class="col">
 
-                        @if (view == View.Index)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
-                        }
+                            @if (view == View.Index)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                            }
 
-                        @if (view == View.New)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
-                        }
+                            @if (view == View.New)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                            }
 
-                        @if (view == View.Edit)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
-                        }
-                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+                            @if (view == View.Edit)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                            }
+                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
+
+                        </div>
 
                     </div>
 
                 </div>
 
             </div>
+
+            @if (view == View.Index)
+            {
+                <input type="hidden" name="idModulo" id="idModulo" />
+
+                if (modulos != null)
+                {
+                    <table class="table table-borderless mt-3">
+
+                        <thead>
+                            <tr>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Modulo</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Descrição Modulo</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Sistema</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (Modulo item in modulos)
+                            {
+                                <tr>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdModulo</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoModulo</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoModulo</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoSistema</td>
+                                    <td scope="row" class="border-0">
+                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdModulo)">Editar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                }
+            }
+
+            @if (view == View.New || view == View.Edit)
+            {
+                <input type="hidden" name="idModulo" id="idModulo" value="@modulo.IdModulo" />
+
+                <div class="mt-3">
+                    <div class="form-col">
+
+                        <div class="col-4">
+                            <label for="codigoModulo">Código</label>
+                            <input type="text" name="codigoModulo" id="codigoModulo" value="@modulo.CodigoModulo" class="form-control" />
+                        </div>
+
+                        <div class="col-4 mt-2">
+                            <label for="descricaoModulo">Descrição</label>
+                            <input type="text" name="descricaoModulo" id="descricaoModulo" value="@modulo.DescricaoModulo" class="form-control" />
+                        </div>
+
+                        <div class="col-4 mt-2">
+                            <label for="">Sistema</label>
+                            <select name="idSistema" id="idSistema" class="form-select">
+                                <option></option>
+                                @foreach (Sistema sistema in sistemas)
+                                {
+                                    <option value="@sistema.IdSistema" @(sistema.IdSistema == modulo.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+            }
 
         </div>
-
-        @if (view == View.Index)
-        {
-            <input type="hidden" name="idModulo" id="idModulo" />
-
-            if (modulos != null)
-            {
-                <table class="table table-bordered border-0 mt-3">
-
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Modulo</th>
-                            <th scope="col">Descrição Modulo</th>
-                            <th scope="col">Sistema</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (Modulo item in modulos)
-                        {
-                            <tr>
-                                <td scope="row">@item.IdModulo</td>
-                                <td scope="row">@item.CodigoModulo</td>
-                                <td scope="row">@item.DescricaoModulo</td>
-                                <td scope="row">@item.DescricaoSistema</td>
-                                <td scope="row" class="border-0">
-                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdModulo)">Editar</button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-
-                </table>
-            }
-        }
-
-        @if (view == View.New || view == View.Edit)
-        {
-            <input type="hidden" name="idModulo" id="idModulo" value="@modulo.IdModulo" />
-
-            <div class="mt-3">
-                <div class="form-col">
-
-                    <div class="col-4">
-                        <label for="codigoModulo">Código</label>
-                        <input type="text" name="codigoModulo" id="codigoModulo" value="@modulo.CodigoModulo" class="form-control" />
-                    </div>
-
-                    <div class="col-4 mt-2">
-                        <label for="descricaoModulo">Descrição</label>
-                        <input type="text" name="descricaoModulo" id="descricaoModulo" value="@modulo.DescricaoModulo" class="form-control" />
-                    </div>
-
-                    <div class="col-4 mt-2">
-                        <label for="">Sistema</label>
-                        <select name="idSistema" id="idSistema" class="form-control">
-                            <option></option>
-                            @foreach (Sistema sistema in sistemas)
-                            {
-                                <option value="@sistema.IdSistema" @(sistema.IdSistema == modulo.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
-                            }
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-
-        }
-
-    </div>
     </form>
 
     <script src="~/Scripts/Scripts.js"></script>

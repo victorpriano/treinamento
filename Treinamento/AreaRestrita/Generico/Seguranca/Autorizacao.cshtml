@@ -1,4 +1,6 @@
-﻿@{
+﻿@RenderPage("~/AreaRestrita/Seguranca.cshtml")
+
+@{
     Page.Title = "Autorização";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
@@ -74,7 +76,7 @@
 
             string procedure = GetNomeProcedure("C");
 
-            if(tipoConsulta == 1)
+            if (tipoConsulta == 1)
             {
                 operadores = new Dao().ExecutarProcedureList<Operador>(procedure, parametros);
             }
@@ -128,16 +130,12 @@
 
     if (acao == "C")
     {
-        Consulta();      
+        Consulta();
     }
 
 
 }
 
-@section head{
-    <link href="~/Scripts/Style.css" rel="stylesheet">
-    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
-}
 
 <body>
 
@@ -147,26 +145,23 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-    <div class="container">
-        @PageHelper.MakeAlert()
+        <div class="container">
+            @PageHelper.MakeAlert()
 
-        <div class="header mt-md-5">
+            <div class="header mt-md-5">
 
-            <div class="header-body">
+                <div class="header-body">
 
-                <div class="row m-xxl-5">
+                    <div class="row m-xxl-5">
 
-                    <div class="col">
+                        <div class="col">
 
-                        <h4 class="header-pretitle mt-4">
-                            @Page.Title
-                        </h4>
+                            <h4 class="header-pretitle mt-4">
+                                @Page.Title
+                            </h4>
 
-                    </div>
+                        </div>
 
-                    <div class="col">
-                        <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Incluir</button>
-                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
 
                     </div>
 
@@ -174,29 +169,36 @@
 
             </div>
 
-        </div>
+            <div class="row mt-3">
 
-            <label>Operador</label>
-            <select name="idOperador" onchange="executarAcao('C')" class="form-control">
-                <option></option>
-                @{ ConsultaAux(1); }
-                @foreach (Operador operador in operadores)
-                {
-                    <option value="@operador.IdOperador" @(idOperador == operador.IdOperador ? "selected" : "")>@operador.Nome</option>
-                }
-            </select>
+                <label class="mt-2 mr-2">Operador</label>
+                <select name="idOperador" onchange="executarAcao('C')" class="mt-3 mx-3 form-select w-25">
+                    <option></option>
+                    @{ ConsultaAux(1); }
+                    @foreach (Operador operador in operadores)
+                    {
+                        <option value="@operador.IdOperador" @(idOperador == operador.IdOperador ? "selected" : "")>@operador.Nome</option>
+                    }
+                </select>
+
+                <div class="col-2 mt-3">
+                    <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Incluir</button>
+                    <button class="btn btn-light mx-2" type="button" onclick="estadoInicial()">Limpar</button>
+                </div>
+
+            </div>
 
             @if (idOperador != null)
             {
 
-                <table class="table table-bordered border-0 mt-3">
+                <table class="table table-borderless mt-3">
 
                     <thead>
                         <tr>
-                            <th scope="col">Sistema</th>
-                            <th scope="col">Modulo</th>
-                            <th scope="col">Página</th>
-                            <th scope="col">Ação</th>
+                            <th scope="col"  class="border-start border-end border-bottom border-top">Sistema</th>
+                            <th scope="col"  class="border-start border-end border-bottom border-top">Modulo</th>
+                            <th scope="col"  class="border-start border-end border-bottom border-top">Página</th>
+                            <th scope="col"  class="border-start border-end border-bottom border-top">Ação</th>
                         </tr>
                     </thead>
 
@@ -208,10 +210,10 @@
                             foreach (Autorizacao item in autorizacoes)
                             {
                                 <tr>
-                                    <td scope="row">@item.DescricaoSistema</td>
-                                    <td scope="row">@item.DescricaoModulo</td>
-                                    <td scope="row">@item.DescricaoPagina</td>
-                                    <td scope="row">@item.Caption</td>
+                                    <td scope="row"  class="border-start border-end border-bottom border-top">@item.DescricaoSistema</td>
+                                    <td scope="row"  class="border-start border-end border-bottom border-top">@item.DescricaoModulo</td>
+                                    <td scope="row"  class="border-start border-end border-bottom border-top">@item.DescricaoPagina</td>
+                                    <td scope="row"  class="border-start border-end border-bottom border-top">@item.Caption</td>
                                     <td scope="row" class="border-0">
                                         <input value="@item.IdAcao" name="idAcao" type="checkbox" @(item.IdAutorizacao != null ? "checked" : "") />
                                     </td>
@@ -224,7 +226,7 @@
                 </table>
             }
 
-    </div>
+        </div>
 
     </form>
 

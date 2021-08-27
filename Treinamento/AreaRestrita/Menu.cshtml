@@ -1,5 +1,5 @@
 ﻿@{
-    Page.Title = "Time";
+    Page.Title = "Menu";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
 
@@ -7,8 +7,10 @@
 
     private class Menu
     {
+        public string IdSistema { get; set; }
         public string CodigoSistema { get; set; }
         public string DescricaoSistema { get; set; }
+        public string IdModulo { get; set; }
         public string CodigoModulo { get; set; }
         public string DescricaoModulo { get; set; }
         public string CodigoPagina { get; set; }
@@ -22,6 +24,7 @@
     private void AlimentaVariaveis()
     {
         idOperador = Convert.ToString(Session["idOperador"]);
+
     }
 
     private void Consulta()
@@ -42,36 +45,63 @@
     }
 }
 
-@{ 
+@{
     AlimentaVariaveis();
     Consulta();
 }
 
-@section head {
-    @RenderPage("~/Estilo/Bootstrap.cshtml")
+
+@helper MakeMenu()
+{
+    string idSistema = null;
+    string idModulo = null;
+
+    <ul class="menu">
+        @foreach (Menu menu in menus)
+        {
+            if (idSistema != menu.IdSistema)
+            {
+                idModulo = null;
+                if (idSistema != null)
+                {
+                    @Html.Raw("</ul></li></ul></li>");
+                }
+                <text>
+                    <li class="parent">
+                        <a href="#">@menu.DescricaoSistema</a>
+                        <ul class="child">
+                </text>
+            }
+
+            if (idModulo != menu.IdModulo)
+            {
+                if (idModulo != null)
+                {
+                    @Html.Raw("</ul></li>");
+                }
+                <text>
+                    <li class="parent">
+                        <a href="#">@menu.DescricaoModulo<span class="expand">»</span></a>
+                        <ul class="child">
+                </text>
+            }
+
+            <li>
+                <a href="~/AreaRestrita/@(menu.CodigoSistema)/@(menu.CodigoModulo)/@(menu.CodigoPagina).cshtml">@menu.DescricaoPagina</a>
+            </li>
+
+            idSistema = menu.IdSistema;
+            idModulo = menu.IdModulo;
+        }
+        @Html.Raw("</ul></li></ul></li>");
+
+    </ul>
 }
 
-<body class="d-flex flex-column h-100">
-
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-        <a class="navbar-brand" href="~/AreaRestrita/Default.cshtml">Copa</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
-                @if (menus != null)
-                {
-                    foreach (Menu menu in menus)
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" href="~/AreaRestrita/@(menu.CodigoSistema)/@(menu.CodigoModulo)/@(menu.CodigoPagina).cshtml">@menu.DescricaoPagina</a>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
-
-        <a href="~/ControleAcesso/Sair.cshtml">Sair</a>
+@if (menus != null)
+{
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-flex justify-content-between">
+         @MakeMenu()
+         <a class="navbar-brand" href="~/ControleAcesso/Sair.cshtml"><span>Sair</span></a>
     </nav>
-</body>
+}

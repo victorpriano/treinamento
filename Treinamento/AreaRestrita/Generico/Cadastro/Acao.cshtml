@@ -1,4 +1,6 @@
-﻿@{
+﻿@RenderPage("~/AreaRestrita/Seguranca.cshtml")
+
+@{
     Page.Title = "Ação";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
@@ -15,7 +17,7 @@
     private class Acao
     {
         public string IdAcao { get; set; }
-        public string IdPagina{ get; set; }
+        public string IdPagina { get; set; }
         public string CodigoAcao { get; set; }
         public string Caption { get; set; }
         public string NomeProcedure { get; set; }
@@ -272,11 +274,6 @@
     ConsultaPaginas();
 }
 
-@section head {
-    <link href="~/Scripts/Style.css" rel="stylesheet">
-    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
-}
-
 <body>
 
     <form name="form1" method="post">
@@ -284,41 +281,43 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-    <div class="container">
-        @PageHelper.MakeAlert()
+        <div class="container">
+            @PageHelper.MakeAlert()
 
-        <div class="header mt-md-5">
+            <div class="header mt-md-5">
 
-            <div class="header-body">
+                <div class="header-body">
 
-                <div class="row m-xxl-5">
+                    <div class="row m-xxl-5">
 
-                    <div class="col">
+                        <div class="col">
 
-                        <h4 class="header-pretitle mt-4">
-                            @Page.Title
-                        </h4>
+                            <h4 class="header-pretitle mt-4">
+                                @Page.Title
+                            </h4>
 
-                    </div>
+                        </div>
 
-                    <div class="col">
+                        <div class="col">
 
-                        @if (view == View.Index)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
-                        }
+                            @if (view == View.Index)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                            }
 
-                        @if (view == View.New)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
-                        }
+                            @if (view == View.New)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                            }
 
-                        @if (view == View.Edit)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
-                        }
-                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+                            @if (view == View.Edit)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                            }
+                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
+
+                        </div>
 
                     </div>
 
@@ -326,163 +325,168 @@
 
             </div>
 
-        </div>
-
-        @if (view == View.Index)
-        {
-            <input type="hidden" name="idAcao" id="idAcao" />
-
-            if (acoes != null)
+            @if (view == View.Index)
             {
-                <table class="table table-bordered border-0 mt-3">
+                <input type="hidden" name="idAcao" id="idAcao" />
 
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Pagina</th>
-                            <th scope="col">Código Ação</th>
-                            <th scope="col">Caption</th>
-                            <th scope="col">Procedure</th>
-                        </tr>
-                    </thead>
+                if (acoes != null)
+                {
+                    <table class="table table-borderless mt-3">
 
-                    <tbody>
-                        @foreach (Acao item in acoes)
-                        {
+                        <thead>
                             <tr>
-                                <td scope="row">@item.IdAcao</td>
-                                <td scope="row">@item.IdPagina</td>
-                                <td scope="row">@item.CodigoAcao</td>
-                                <td scope="row">@item.Caption</td>
-                                <td scope="row">@item.NomeProcedure</td>
-                                <td scope="row" class="border-0">
-                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdAcao)">Editar</button>
-                                </td>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Pagina</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Código Ação</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Caption</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Procedure</th>
                             </tr>
-                        }
-                    </tbody>
+                        </thead>
 
-                </table>
+                        <tbody>
+                            @foreach (Acao item in acoes)
+                            {
+                                <tr>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdAcao</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdPagina</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoAcao</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.Caption</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.NomeProcedure</td>
+                                    <td scope="row" class="border-0">
+                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdAcao)">Editar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                }
             }
-        }
 
-        @if (view == View.New)
-        {
-            <input type="hidden" name="idAcao" id="idAcao" />
+            @if (view == View.New)
+            {
+                <input type="hidden" name="idAcao" id="idAcao" />
 
-            <div class="form-col mt-3">
+                <div class="form-col mt-3">
 
-                <div class="col-4">
+                    <div class="col-4">
 
-                    <label>Sistema</label>
-                    <select name="idSistema" onchange="recarregarPagina()" class="form-control">
+                        <label>Sistema</label>
+                        <select name="idSistema" onchange="recarregarPagina()" class="form-select">
+                            <option></option>
+                            @foreach (Sistema sistema in sistemas)
+                            {
+                                <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                            }
+                        </select>
+
+                    </div>
+
+
+                    @if (idSistema != null)
+                    {
+                        <div class="col-4 mt-2">
+
+                            <label>Modulo</label>
+                            <select name="idModulo" onchange="recarregarPagina()" class="form-select">
+                                <option></option>
+                                @foreach (Modulo modulo in modulos)
+                                {
+                                    <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
+                                }
+                            </select>
+
+                        </div>
+                    }
+
+                    @if (idModulo != null)
+                    {
+                        <div class="col-4 mt-2">
+
+                            <label>Pagina</label>
+                            <select name="idPagina" onchange="recarregarPagina()" class="form-select">
+                                <option></option>
+                                @foreach (Pagina pagina in paginas)
+                                {
+                                    <option value="@pagina.IdPagina" @(idPagina == pagina.IdPagina ? "selected" : "")>@pagina.DescricaoPagina</option>
+                                }
+                            </select>
+
+                        </div>
+                    }
+
+                    @if (idPagina != null)
+                    {
+                        <div class="form-col mt-3">
+
+                            <div class="col-4">
+
+                                <label>Ação</label>
+                                <input type="text" name="codigoAcao" id="idAcao" value="@acao.CodigoAcao" class="form-control" />
+                                <label class="mt-2">Caption</label>
+                                <input type="text" name="caption" id="idAcao" value="@acao.Caption" class="form-control" />
+                                <label class="mt-2">Procedure</label>
+                                <input type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" class="form-control mb-3" />
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            }
+
+            @if (view == View.Edit)
+            {
+                <input type="hidden" name="idAcao" id="idAcao" value="@acao.IdAcao" />
+
+                <div class="col-6">
+
+                    <label class="mt-4">Sistema</label>
+                    <select name="idSistema" class="form-control">
                         <option></option>
                         @foreach (Sistema sistema in sistemas)
                         {
-                            <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                            <option value="@sistema.IdSistema">@sistema.DescricaoSistema</option>
+                        }
+                    </select>
+
+                    <label class="mt-2">Modulo</label>
+                    <select name="idModulo" class="form-control">
+                        <option></option>
+                        @foreach (Modulo modulo in modulos)
+                        {
+                            <option value="@modulo.IdModulo">@modulo.DescricaoModulo</option>
+                        }
+                    </select>
+
+                    <label class="mt-2">Descrição Página</label>
+                    <select name="idPagina" class="form-control">
+                        <option></option>
+                        @foreach (Pagina pagina in paginas)
+                        {
+                            <option value="@pagina.IdPagina">@pagina.DescricaoPagina</option>
                         }
                     </select>
 
                 </div>
 
 
-                @if (idSistema != null)
-                {
-                    <div class="col-4 mt-2">
-
-                        <label>Modulo</label>
-                        <select name="idModulo" onchange="recarregarPagina()" class="form-control">
-                            <option></option>
-                            @foreach (Modulo modulo in modulos)
-                            {
-                                <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
-                            }
-                        </select>
-
-                    </div>
-                }
-
-                @if (idModulo != null)
-                {
-                    <div class="col-4 mt-2">
-
-                        <label>Pagina</label>
-                        <select name="idPagina" onchange="recarregarPagina()" class="form-control">
-                            <option></option>
-                            @foreach (Pagina pagina in paginas)
-                            {
-                                <option value="@pagina.IdPagina" @(idPagina == pagina.IdPagina ? "selected" : "")>@pagina.DescricaoPagina</option>
-                            }
-                        </select>
-
-                    </div>
-                }
-
-                @if (idPagina != null)
-                {
-                    <div class="form-col mt-3">
-
-                        <div class="col-4">
-
-                            <label>Ação</label>
-                            <input type="text" name="codigoAcao" id="idAcao" value="@acao.CodigoAcao" class="form-control" />
-                            <label class="mt-2">Caption</label>
-                            <input type="text" name="caption" id="idAcao" value="@acao.Caption" class="form-control" />
-                            <label class="mt-2">Procedure</label>
-                            <input type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" class="form-control mb-3" />
-
-                        </div>
-
-                    </div>
-                }
-
-            </div>
-        }
-
-        @if (view == View.Edit)
-        {
-            <input type="hidden" name="idAcao" id="idAcao" value="@acao.IdAcao" />
-
-            <label>Sistema</label>
-            <select name="idSistema" class="form-control">
-                <option></option>
-                @foreach (Sistema sistema in sistemas)
-                {
-                    <option value="@sistema.IdSistema">@sistema.DescricaoSistema</option>
-                }
-            </select>
-
-            <label>Modulo</label>
-            <select name="idModulo" class="form-control">
-                <option></option>
-                @foreach (Modulo modulo in modulos)
-                {
-                    <option value="@modulo.IdModulo">@modulo.DescricaoModulo</option>
-                }
-            </select>
-
-            <label>Descrição Página</label>
-            <select name="idPagina" class="form-control">
-                <option></option>
-                @foreach (Pagina pagina in paginas)
-                {
-                    <option value="@pagina.IdPagina">@pagina.DescricaoPagina</option>
-                }
-            </select>
-
-            <label>Código Ação</label>
-            <input type="text" name="codigoAcao" id="codigoAcao" value="@acao.CodigoAcao" />
-            <label>Caption</label>
-            <input type="text" name="caption" id="idAcao" value="@acao.Caption" />
-            <label>Procedure</label>
-            <input type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" />
-        }
+                <div class="col-6">
+                    <label class="mt-2">Código Ação</label>
+                    <input class="form-control" type="text" name="codigoAcao" id="codigoAcao" value="@acao.CodigoAcao" />
+                    <label class="mt-2">Caption</label>
+                    <input class="form-control" type="text" name="caption" id="idAcao" value="@acao.Caption" />
+                    <label class="mt-2">Procedure</label>
+                    <input class="form-control mb-5" type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" />
+                </div>
+            }
 
 
-    </div>
+        </div>
 
     </form>
-        
+
     <script src="~/Scripts/Scripts.js"></script>
 
     <script>

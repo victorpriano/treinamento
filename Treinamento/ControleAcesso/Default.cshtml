@@ -1,5 +1,8 @@
-﻿@{ Page.Title = "Controle de Acesso";
-    Layout = "~/ControleAcesso/_Layout.cshtml"; }
+﻿@{ 
+    Page.Title = "Controle de Acesso";
+    Layout = "~/ControleAcesso/_Layout.cshtml"; 
+    
+}
 
 @functions{
 
@@ -47,14 +50,19 @@
         {
             ModelState.AddError("alert-danger", ex.Message);
         }
-    } }
+    } 
+    
+}
 
-@{ AlimentaVariaveis();
+@{ 
+    AlimentaVariaveis();
 
     if (IsPost)
     {
         AbreSessao();
-    } }
+    } 
+    
+}
 
 @section meta
 {
@@ -64,23 +72,91 @@
     }
 }
 
+
 <body>
-    <h1>Login</h1>
 
-    @PageHelper.MakeAlert()
+    <div class="container">
 
-    @if (loginOk)
-    {
-        <h1>Login realizado com sucesso</h1>
-        <h2>Seja bem vindo, @operador.Nome</h2>
-    }
-    else
-    {
-        <form name="form1" method="post">
-            <input placeholder="cpf" name="cpf" />
-            <input placeholder="senha" type="password" name="senha" />
-            <button>Logar</button>
-        </form>
-    }
+        <div class="col">
+
+            <div class="row">
+
+                @PageHelper.MakeAlert()
+
+                @if (loginOk)
+                {
+                    ModelState.AddError("alert-danger", "Login realizado com sucesso");
+                    <h2>Seja bem vindo, @operador.Nome</h2>
+
+                    <div class="modal" id="modal">
+                        <div class="modal" tabindex="-1" data-toggle="modal" data-target="#modal" >
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Modal title</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Modal body text goes here.</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="button" class="btn btn-primary">Save changes</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+                    <form name="form1" method="post">
+
+                        <div class="d-flex row d-flex justify-content-center mt-5">
+
+                            <div class="border p-5 mt-5 w-50">
+
+                                <div class="row mx-5">
+
+                                    <div class="mb-3 text-center">
+                                        <span class="text-secondary fw-bold text-center">Login</span>
+                                    </div>
+
+                                    <div class="mb-4 w-50">
+                                        <input class="form-control" placeholder="CPF" name="cpf" />
+                                    </div>
+
+                                    <div class="w-50">
+                                        <input class="form-control" placeholder="senha" type="password" name="senha" />
+                                    </div>
+
+                                    <div class="mt-3 row">
+                                        <button class="btn btn-secondary mx-3">Logar</button>
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+                    </form>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $('#modal').modal('show');
+        })
+    </script>
 
 </body>

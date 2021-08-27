@@ -1,4 +1,6 @@
-﻿function estadoInicial() {
+﻿const { Modal } = require("bootstrap");
+
+function estadoInicial() {
     var els = document.form1.querySelectorAll("input, select");
     if (els != null) {
         els.forEach(function (item) {

@@ -1,4 +1,6 @@
-﻿@{
+﻿@RenderPage("~/AreaRestrita/Seguranca.cshtml")
+
+@{
     Page.Title = "Sistema";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
@@ -107,11 +109,11 @@
 
 
             Consulta();
-            
+
             LimpaVariaveis();
 
             ModelState.AddError("alert-success", "Operação realizada com sucesso");
-            
+
         }
         catch (Exception ex)
         {
@@ -131,11 +133,11 @@
                 sistema = new Sistema();
             }
         }
-        else if(sistema == null)
+        else if (sistema == null)
         {
             view = View.Index;
         }
-        else if(sistema != null)
+        else if (sistema != null)
         {
             view = View.Edit;
         }
@@ -159,11 +161,6 @@
     SetView();
 }
 
-@section head {
-    <link href="~/Scripts/Style.css" rel="stylesheet">
-    <link href="~/Estilo/Bootstrap.cshtml" rel="stylesheet">
-}
-
 <body>
     <form name="form1" method="post">
 
@@ -171,41 +168,43 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-    <div class="container">
-        @PageHelper.MakeAlert()
+        <div class="container">
+            @PageHelper.MakeAlert()
 
-        <div class="header mt-md-5">
+            <div class="header mt-md-5">
 
-            <div class="header-body">
+                <div class="header-body">
 
-                <div class="row m-xxl-5">
+                    <div class="row m-xxl-5">
 
-                    <div class="col">
+                        <div class="col">
 
-                        <h4 class="header-pretitle mt-4">
-                            @Page.Title
-                        </h4>
+                            <h4 class="header-pretitle mt-4">
+                                @Page.Title
+                            </h4>
 
-                    </div>
+                        </div>
 
-                    <div class="col mx-md-4">
+                        <div class="col mx-md-4">
 
-                        @if (view == View.Index)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
-                        }
+                            @if (view == View.Index)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                            }
 
-                        @if (view == View.New)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
-                        }
-                        
-                        @if (view == View.Edit)
-                        {
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
-                            <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
-                        }
-                        <button class="btn btn-terciary" type="button" onclick="estadoInicial()">Limpar</button>
+                            @if (view == View.New)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                            }
+
+                            @if (view == View.Edit)
+                            {
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
+                                <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                            }
+                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
+
+                        </div>
 
                     </div>
 
@@ -213,57 +212,55 @@
 
             </div>
 
-        </div>
+            @if (view == View.Index)
+            {
+                <input type="hidden" name="idSistema" />
 
-        @if (view == View.Index)
-        {
-            <input type="hidden" name="idSistema"/>
+                if (sistemas != null)
+                {
+                    <table class="table table-borderless mt-3">
 
-            if(sistemas != null)
-            { 
-                <table class="table table-bordered border-0 mt-3">
-
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Código</th>
-                            <th scope="col">Descrição</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach (Sistema item in sistemas)
-                        {
+                        <thead>
                             <tr>
-                                <td scope="row">@item.IdSistema</td>
-                                <td scope="row">@item.CodigoSistema</td>
-                                <td scope="row">@item.DescricaoSistema</td>
-                                <td scope="row" class="border-0">
-                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdSistema)">Editar</button>
-                                </td>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Código</th>
+                                <th scope="col" class="border-start border-end border-bottom border-top">Descrição</th>
                             </tr>
-                        }
-                    </tbody>
+                        </thead>
 
-                </table>
+                        <tbody>
+                            @foreach (Sistema item in sistemas)
+                            {
+                                <tr>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdSistema</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoSistema</td>
+                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoSistema</td>
+                                    <td scope="row" class="border-0">
+                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdSistema)">Editar</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+
+                    </table>
+                }
             }
-        }
 
-        @if(view == View.New || view == View.Edit)
-        { 
-            <input type="hidden" name="idSistema" id="idSistema" value="@sistema.IdSistema" />
-            
-            <div class="form-col mt-3">
+            @if (view == View.New || view == View.Edit)
+            {
+                <input type="hidden" name="idSistema" id="idSistema" value="@sistema.IdSistema" />
 
-                <label class="mt-2">Código</label>
-                <input type="text" name="codigoSistema" id="idSistema" value="@sistema.CodigoSistema" class="form-control w-25" />
-                <label class="mt-2">Descrição</label>
-                <input type="text" name="descricaoSistema" id="idSistema" value="@sistema.DescricaoSistema" class="form-control w-25" />                
+                <div class="form-col mt-3">
 
-            </div>
-        }
+                    <label class="mt-2">Código</label>
+                    <input type="text" name="codigoSistema" id="idSistema" value="@sistema.CodigoSistema" class="form-control w-25" />
+                    <label class="mt-2">Descrição</label>
+                    <input type="text" name="descricaoSistema" id="idSistema" value="@sistema.DescricaoSistema" class="form-control w-25" />
 
-    </div>
+                </div>
+            }
+
+        </div>
     </form>
 
     <script src="~/Scripts/Scripts.js"></script>

@@ -34,6 +34,8 @@ public class Dao
     
     public List<T> ExecutarProcedureList<T>(string procedure, Dictionary<string, object> parametros)
     {
+        if (procedure == null) return null;
+
         List<T> list = null;
         
         SqlConnection connection = new SqlConnection(connectionString);
