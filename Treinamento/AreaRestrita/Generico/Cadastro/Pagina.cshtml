@@ -58,9 +58,11 @@
     List<Sistema> sistemas = null;
     List<Pagina> paginas = null;
     List<Modulo> modulos = null;
+    List<Botao> botoes = null;
 
     private void AlimentaVariaveis()
     {
+        botoes = new BotaoDao().GetAll();
         acao = Util.ChecaNulo(Request.Form["acao"]);
         idPagina = Util.ChecaNulo(Request.Form["idPagina"]);
         idModulo = Util.ChecaNulo(Request.Form["idModulo"]);
@@ -83,15 +85,9 @@
 
     private string GetNomeProcedure(string acao)
     {
-        switch (acao)
-        {
-            case "C": return "stp_Sys_Pagina_Sel";
-            case "I": return "stp_Sys_Pagina_Ins";
-            case "A": return "stp_Sys_Pagina_Upd";
-            case "E": return "stp_Sys_Pagina_Del";
-
-            default: return null;
-        }
+        if (botoes == null) return null;
+        Botao btn = botoes.Find(x => x.CodigoAcao == acao);
+        return btn != null ? btn.NomeProcedure : null;
     }
 
     private void Consulta()
@@ -273,13 +269,13 @@
 
                             @if (view == View.New)
                             {
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                                @PageHelper.MakeBotao(botoes, "I")
                             }
 
                             @if (view == View.Edit)
                             {
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                                @PageHelper.MakeBotao(botoes, "A")
+                                @PageHelper.MakeBotao(botoes, "E")
                             }
 
                             <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>

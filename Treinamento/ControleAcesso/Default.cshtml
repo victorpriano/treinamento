@@ -68,7 +68,7 @@
 {
     @if (loginOk)
     {
-        <meta http-equiv="refresh" content="2;url=/" />
+        <meta http-equiv="refresh" content="3;url=/" />
     }
 }
 
@@ -86,29 +86,18 @@
                 @if (loginOk)
                 {
                     ModelState.AddError("alert-danger", "Login realizado com sucesso");
-                    <h2>Seja bem vindo, @operador.Nome</h2>
 
-                    <div class="modal" id="modal">
-                        <div class="modal" tabindex="-1" data-toggle="modal" data-target="#modal" >
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Modal title</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <p>Modal body text goes here.</p>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary">Save changes</button>
-                                    </div>
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Log Treinamento</h5>
+                                </div>
+                                <div class="modal-body">
+                                    Bem vindo ao treinamento, aproveite...
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 }
                 else
@@ -154,9 +143,9 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-            $('#modal').modal('show');
-        })
+        $(window).on('load', function () {
+            $('#myModal').modal('show');
+        });
     </script>
 
 </body>

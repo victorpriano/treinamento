@@ -28,9 +28,11 @@
 
     List<Autorizacao> autorizacoes = null;
     List<Operador> operadores = null;
+    List<Botao> botoes = null;
 
     private void AlimentaVariaveis()
     {
+        botoes = new BotaoDao().GetAll();
         acao = Util.ChecaNulo(Request.Form["acao"]);
         idOperador = Util.ChecaNulo(Request.Form["idOperador"]);
         acoes = Util.ChecaNulo(Request.Form["idAcao"]);
@@ -39,13 +41,9 @@
 
     private string GetNomeProcedure(string acao)
     {
-        switch (acao)
-        {
-            case "C": return "stp_Sys_Autorizacao_Sel";
-            case "A": return "stp_Sys_Autorizacao_Upd";
-
-            default: return null;
-        }
+        if (botoes == null) return null;
+        Botao btn = botoes.Find(x => x.CodigoAcao == acao);
+        return btn != null ? btn.NomeProcedure : null;
     }
 
     private void Consulta()
@@ -182,7 +180,10 @@
                 </select>
 
                 <div class="col-2 mt-3">
-                    <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Incluir</button>
+                    @if(botoes.Any(x => x.CodigoAcao == "A"))
+                    { 
+                        <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Incluir</button>
+                    }
                     <button class="btn btn-light mx-2" type="button" onclick="estadoInicial()">Limpar</button>
                 </div>
 

@@ -62,9 +62,11 @@
     List<Sistema> sistemas = null;
     List<Pagina> paginas = null;
     List<Modulo> modulos = null;
+    List<Botao> botoes = null;
 
     private void AlimentaVariaveis()
     {
+        botoes = new BotaoDao().GetAll();
         action = Util.ChecaNulo(Request.Form["action"]);
         idAcao = Util.ChecaNulo(Request.Form["idAcao"]);
         idModulo = Util.ChecaNulo(Request.Form["idModulo"]);
@@ -83,15 +85,9 @@
 
     private string GetNomeProcedure(string action)
     {
-        switch (action)
-        {
-            case "C": return "stp_Sys_Acao_Sel";
-            case "I": return "stp_Sys_Acao_Ins";
-            case "A": return "stp_Sys_Acao_Upd";
-            case "E": return "stp_Sys_Acao_Del";
-
-            default: return null;
-        }
+        if (botoes == null) return null;
+        Botao btn = botoes.Find(x => x.CodigoAcao == action);
+        return btn != null ? btn.NomeProcedure : null;
     }
 
     private void Consulta()
@@ -255,6 +251,7 @@
 }
 
 @{
+    
     AlimentaVariaveis();
 
     if (action == "I" || action == "A" || action == "E")
@@ -284,7 +281,7 @@
         <div class="container">
             @PageHelper.MakeAlert()
 
-            <div class="header mt-md-5">
+            <div class="header mt-5">
 
                 <div class="header-body">
 
@@ -302,18 +299,21 @@
 
                             @if (view == View.Index)
                             {
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                                if (botoes.Any(x => x.CodigoAcao == "I"))
+                                {
+                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                                }
                             }
 
                             @if (view == View.New)
                             {
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('I')">Incluir</button>
+                                @PageHelper.MakeBotao(botoes, "I")
                             }
 
                             @if (view == View.Edit)
                             {
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('A')">Alterar</button>
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('E')">Excluir</button>
+                                @PageHelper.MakeBotao(botoes, "A")
+                                @PageHelper.MakeBotao(botoes, "E")
                             }
                             <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
 
@@ -331,7 +331,7 @@
 
                 if (acoes != null)
                 {
-                    <table class="table table-borderless mt-3">
+                    <table class="table table-borderless">
 
                         <thead>
                             <tr>

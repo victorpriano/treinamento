@@ -55,6 +55,12 @@
 {
     string idSistema = null;
     string idModulo = null;
+    
+    <div class="mx-2 p-2">
+        <a class="navbar-brand" href="~/AreaRestrita/">Home</a>
+    </div>
+
+    <div class="pt-2" style="width:86%">
 
     <ul class="menu">
         @foreach (Menu menu in menus)
@@ -67,7 +73,7 @@
                     @Html.Raw("</ul></li></ul></li>");
                 }
                 <text>
-                    <li class="parent">
+                    <li class="parent navbar-expand">
                         <a href="#">@menu.DescricaoSistema</a>
                         <ul class="child">
                 </text>
@@ -93,15 +99,22 @@
             idSistema = menu.IdSistema;
             idModulo = menu.IdModulo;
         }
-        @Html.Raw("</ul></li></ul></li>");
+        @Html.Raw("</ul></li></ul></li>")
 
     </ul>
+    </div>
+
+        <div class="pt-2">
+
+            <a class="navbar-brand" href="~/ControleAcesso/Sair.cshtml"><span>Sair</span></a>
+
+        </div>
 }
 
 @if (menus != null)
 {
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4 d-flex justify-content-between">
+    <nav class="nav nav-tabs navbar-dark bg-dark justify-content-between" role="tablist">
          @MakeMenu()
-         <a class="navbar-brand" href="~/ControleAcesso/Sair.cshtml"><span>Sair</span></a>
+        
     </nav>
 }

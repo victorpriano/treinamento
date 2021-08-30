@@ -43,9 +43,11 @@
     Time time = null;
     List<Jogo> jogos = null;
     List<Time> times = null;
+    List<Botao> botoes = null;
 
     private void AlimentaVariaveis()
     {
+        botoes = new BotaoDao().GetAll();
         acao = Util.ChecaNulo(Request.Form["acao"]);
         idJogo = Util.ChecaNulo(Request.Form["idJogo"]);
         idTime1 = Util.ChecaNulo(Request.Form["idTime1"]);
@@ -62,15 +64,9 @@
 
     private string GetNomeProcedure(string acao)
     {
-        switch (acao)
-        {
-            case "C": return "stp_Vic_Jogo_Sel";
-            case "I": return "stp_Vic_Jogo_Ins";
-            case "A": return "stp_Vic_Jogo_Upd";
-            case "E": return "stp_Vic_Jogo_Del";
-
-            default: return null;
-        }
+        if (botoes == null) return null;
+        Botao btn = botoes.Find(x => x.CodigoAcao == acao);
+        return btn != null ? btn.NomeProcedure : null;
     }
 
     private void Consulta()
@@ -116,9 +112,9 @@
     private void DbManutencao()
     {
         Dictionary<string, object> parametros = new Dictionary<string, object>();
-        parametros.Add("@IdJogo", idJogo);
-        parametros.Add("@IdTime1", idTime1);
-        parametros.Add("@IdTime2", idTime2);
+        parametros.Add("@IdJogo", jogo.IdJogo);
+        parametros.Add("@IdTime1", jogo.IdTime1);
+        parametros.Add("@IdTime2", jogo.IdTime2);
 
         string procedure = GetNomeProcedure(acao);
 
@@ -224,7 +220,12 @@
                                     {
 
                                         <div class="col-12 d-flex justify-content-center mb-4">
-                                            <button class="btn btn-secondary mx-2" type="button" onclick="executarAcao('new')">Adicionar novo</button>
+                                            
+                                            @if(botoes.Any(x => x.CodigoAcao == "I"))
+                                            { 
+                                                <button class="btn btn-secondary mx-2" type="button" onclick="executarAcao('new')">Adicionar novo</button>
+                                            }
+                                            
                                             <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
                                         </div>
 

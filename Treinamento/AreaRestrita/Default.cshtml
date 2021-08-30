@@ -1,24 +1,37 @@
 ﻿@{
-    Page.Title = "Sejam bem vindo";
+    Page.Title = "HOME";
     Layout = "~/AreaRestrita/_Layout.cshtml";
 }
+
 
 <body>
     @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-    <h1>
-        Olá,
-        @if (DateTime.Now.Hour < 12)
-        {
-<span>Bom dia.</span> }
-            else if (DateTime.Now.Hour < 18)
-            {
-<span>Boa tarde.</span> }
-            else
-            {
-<span>Boa noite.</span>}
-    </h1>
-    <h3>Seja bem vindo ao treinamento</h3>
+    <div class="d-flex row d-flex justify-content-center mt-5">
+        <div class="border p-5 mt-5 w-50">
+            <h1>
+                Olá,
+                @if (DateTime.Now.Hour < 12)
+                {
+                    <span>Bom dia.</span> 
+                }
+                else if (DateTime.Now.Hour < 18)
+                {
+                    <span>Boa tarde.</span> 
+                }
+                else
+                {
+                    <span>Boa noite.</span>
+                }
+            </h1>
+            
+            <h3>Seja bem vindo ao treinamento</h3>
 
-    <div>@DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")</div>
+            <div>@DateTime.Now.ToString("dd/MM/yyyy hh:mm:ss")</div>
+        </div>
+
+    </div>
+    
+
+
 </body>
