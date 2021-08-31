@@ -164,99 +164,110 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-        <div class="container">
-            @PageHelper.MakeAlert()
+    <div class="container">
+        @PageHelper.MakeAlert()
 
-            <div class="header mt-md-5">
+        <div class="header">
 
-                <div class="header-body">
+            <div class="header-body">
 
-                    <div class="row m-xxl-5">
+                <div class="row">
 
-                        <div class="col">
+                    <div class="col">
 
-                            <h4 class="header-pretitle mt-4">
-                                @Page.Title
-                            </h4>
-
-                        </div>
-
-                        <div class="col mx-md-4">
-
-                            @if (view == View.Index)
-                            {
-                                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
-                            }
-
-                            @if (view == View.New)
-                            {
-                                @PageHelper.MakeBotao(botoes, "I")
-                            }
-
-                            @if (view == View.Edit)
-                            {
-                                @PageHelper.MakeBotao(botoes, "A")
-                                @PageHelper.MakeBotao(botoes, "E")
-                            }
-                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
-
-                        </div>
+                        <h4 class="header-pretitle mt-3">
+                            @Page.Title
+                        </h4>
 
                     </div>
-
                 </div>
 
             </div>
 
+        </div>
+
+
+        <div class="justify-content-end">
+
             @if (view == View.Index)
             {
-                <input type="hidden" name="idSistema" />
-
-                if (sistemas != null)
-                {
-                    <table class="table table-borderless mt-3">
-
-                        <thead>
-                            <tr>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Código</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Descrição</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach (Sistema item in sistemas)
-                            {
-                                <tr>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdSistema</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoSistema</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoSistema</td>
-                                    <td scope="row" class="border-0">
-                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdSistema)">Editar</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-
-                    </table>
-                }
-            }
-
-            @if (view == View.New || view == View.Edit)
-            {
-                <input type="hidden" name="idSistema" id="idSistema" value="@sistema.IdSistema" />
-
-                <div class="form-col mt-3">
-
-                    <label class="mt-2">Código</label>
-                    <input type="text" name="codigoSistema" id="idSistema" value="@sistema.CodigoSistema" class="form-control w-25" />
-                    <label class="mt-2">Descrição</label>
-                    <input type="text" name="descricaoSistema" id="idSistema" value="@sistema.DescricaoSistema" class="form-control w-25" />
-
-                </div>
+                @PageHelper.BtnLimpar()
+                <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Adicionar novo</button>
             }
 
         </div>
+
+
+        @if (view == View.Index)
+        {
+            <input type="hidden" name="idSistema" />
+
+            if (sistemas != null)
+            {
+                <table class="table table-borderless mt-3">
+
+                    <thead>
+                        <tr>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Código</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Descrição</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (Sistema item in sistemas)
+                        {
+                            <tr>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.IdSistema</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoSistema</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.DescricaoSistema</td>
+                                <td scope="row" class="border-0">
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdSistema)">Editar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            }
+        }
+
+        @if (view == View.New || view == View.Edit)
+        {
+            <input type="hidden" name="idSistema" id="idSistema" value="@sistema.IdSistema" />
+
+            <div class="form-col mt-3">
+
+                <label class="mt-2">Código</label>
+                <input type="text" name="codigoSistema" id="idSistema" value="@sistema.CodigoSistema" class="form-control w-25" />
+                <label class="mt-2">Descrição</label>
+                <input type="text" name="descricaoSistema" id="idSistema" value="@sistema.DescricaoSistema" class="form-control w-25" />
+
+            </div>
+
+            if (view == View.New)
+            {
+                if (botoes.Any(x => x.CodigoAcao == "I"))
+                {
+                    <div class="justify-content-end mx-8 mt-3">
+                        @PageHelper.BtnLimpar() 
+                        <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
+                    </div>
+                }
+            }
+
+            <div class="justify-content-end mx-5 mt-3">
+                @if (view == View.Edit)
+                {
+                    @PageHelper.MakeBotao(botoes, "A")
+                    @PageHelper.MakeBotao(botoes, "E")
+                    @PageHelper.BtnLimpar()
+                }
+            </div>
+        }
+
+
+    </div>
     </form>
 
     <script src="~/Scripts/Scripts.js"></script>

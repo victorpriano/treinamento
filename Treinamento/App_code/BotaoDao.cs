@@ -40,7 +40,7 @@ public class BotaoDao
                 {"@Pagina", pagina}
             };
 
-            return new Dao().ExecutarProcedureList<Botao>("stp_sys_MontaMenu", parametros);
+            return new Dao().ExecutarProcedureList<Botao>("stp_Sys_MontaMenu", parametros);
         }
         catch
         {

@@ -33,9 +33,11 @@
     string idJogador = null;
     List<Participacao> participacao = null;
     List<Jogo> jogos = null;
+    List<Botao> botoes = null;
 
     private void AlimentaVariaveis()
     {
+        botoes = new BotaoDao().GetAll();
         acao = Request.Form["acao"];
         idJogo = Request.Form["idJogo"];
         idJogador = Request.Form["idJogador"];
@@ -48,13 +50,9 @@
 
     private string GetNomeProcedure(string acao)
     {
-        switch (acao)
-        {
-            case "C": return "stp_Vic_Participacao_Sel";
-            case "gol": return "stp_Vic_Participacao_Upd";
-
-            default: return null;
-        }
+        if (botoes == null) return null;
+        Botao btn = botoes.Find(x => x.CodigoAcao == acao);
+        return btn != null ? btn.NomeProcedure : null;
     }
 
     private void Consulta()

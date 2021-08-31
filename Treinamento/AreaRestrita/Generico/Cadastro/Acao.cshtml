@@ -278,46 +278,20 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-        <div class="container">
-            @PageHelper.MakeAlert()
+    <div class="container">
+        @PageHelper.MakeAlert()
 
-            <div class="header mt-5">
+        <div class="header mt-2">
 
-                <div class="header-body">
+            <div class="header-body">
 
-                    <div class="row m-xxl-5">
+                <div class="row">
 
-                        <div class="col">
+                    <div class="col">
 
-                            <h4 class="header-pretitle mt-4">
-                                @Page.Title
-                            </h4>
-
-                        </div>
-
-                        <div class="col">
-
-                            @if (view == View.Index)
-                            {
-                                if (botoes.Any(x => x.CodigoAcao == "I"))
-                                {
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Incluir</button>
-                                }
-                            }
-
-                            @if (view == View.New)
-                            {
-                                @PageHelper.MakeBotao(botoes, "I")
-                            }
-
-                            @if (view == View.Edit)
-                            {
-                                @PageHelper.MakeBotao(botoes, "A")
-                                @PageHelper.MakeBotao(botoes, "E")
-                            }
-                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
-
-                        </div>
+                        <h4 class="header-pretitle">
+                            @Page.Title
+                        </h4>
 
                     </div>
 
@@ -325,165 +299,198 @@
 
             </div>
 
+        </div>
+
+        <div class="mt-2 mb-3">
+
             @if (view == View.Index)
             {
-                <input type="hidden" name="idAcao" id="idAcao" />
-
-                if (acoes != null)
+                if (botoes.Any(x => x.CodigoAcao == "I"))
                 {
-                    <table class="table table-borderless">
-
-                        <thead>
-                            <tr>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Pagina</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Código Ação</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Caption</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Procedure</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach (Acao item in acoes)
-                            {
-                                <tr>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdAcao</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdPagina</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoAcao</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.Caption</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.NomeProcedure</td>
-                                    <td scope="row" class="border-0">
-                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdAcao)">Editar</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-
-                    </table>
+                    @PageHelper.BtnLimpar()
+                    <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Adicionar novo</button>
                 }
             }
 
-            @if (view == View.New)
+        </div>
+
+        @if (view == View.Index)
+        {
+            <input type="hidden" name="idAcao" id="idAcao" />
+
+            if (acoes != null)
             {
-                <input type="hidden" name="idAcao" id="idAcao" />
+                <table class="table table-borderless">
 
-                <div class="form-col mt-3">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Pagina</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Código Ação</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Caption</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Procedure</th>
+                        </tr>
+                    </thead>
 
-                    <div class="col-4">
+                    <tbody>
+                        @foreach (Acao item in acoes)
+                        {
+                            <tr>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.IdAcao</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.IdPagina</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.CodigoAcao</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.Caption</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.NomeProcedure</td>
+                                <td scope="row" class="border-0">
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdAcao)">Editar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
 
-                        <label>Sistema</label>
-                        <select name="idSistema" onchange="recarregarPagina()" class="form-select">
+                </table>
+            }
+        }
+
+        @if (view == View.New)
+        {
+            <input type="hidden" name="idAcao" id="idAcao" />
+
+            <div class="form-col mt-3">
+
+                <div class="col-4">
+
+                    <label>Sistema</label>
+                    <select name="idSistema" onchange="recarregarPagina()" class="form-select">
+                        <option></option>
+                        @foreach (Sistema sistema in sistemas)
+                        {
+                            <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                        }
+                    </select>
+
+                </div>
+
+
+                @if (idSistema != null)
+                {
+                    <div class="col-4 mt-2">
+
+                        <label>Modulo</label>
+                        <select name="idModulo" onchange="recarregarPagina()" class="form-select">
                             <option></option>
-                            @foreach (Sistema sistema in sistemas)
+                            @foreach (Modulo modulo in modulos)
                             {
-                                <option value="@sistema.IdSistema" @(idSistema == sistema.IdSistema ? "selected" : "")>@sistema.DescricaoSistema</option>
+                                <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
                             }
                         </select>
 
                     </div>
+                }
 
+                @if (idModulo != null)
+                {
+                    <div class="col-4 mt-2">
 
-                    @if (idSistema != null)
-                    {
-                        <div class="col-4 mt-2">
+                        <label>Pagina</label>
+                        <select name="idPagina" onchange="recarregarPagina()" class="form-select">
+                            <option></option>
+                            @foreach (Pagina pagina in paginas)
+                            {
+                                <option value="@pagina.IdPagina" @(idPagina == pagina.IdPagina ? "selected" : "")>@pagina.DescricaoPagina</option>
+                            }
+                        </select>
 
-                            <label>Modulo</label>
-                            <select name="idModulo" onchange="recarregarPagina()" class="form-select">
-                                <option></option>
-                                @foreach (Modulo modulo in modulos)
-                                {
-                                    <option value="@modulo.IdModulo" @(idModulo == modulo.IdModulo ? "selected" : "")>@modulo.DescricaoModulo</option>
-                                }
-                            </select>
+                    </div>
+                }
 
-                        </div>
-                    }
+                @if (idPagina != null)
+                {
+                    <div class="form-col mt-3">
 
-                    @if (idModulo != null)
-                    {
-                        <div class="col-4 mt-2">
+                        <div class="col-4">
 
-                            <label>Pagina</label>
-                            <select name="idPagina" onchange="recarregarPagina()" class="form-select">
-                                <option></option>
-                                @foreach (Pagina pagina in paginas)
-                                {
-                                    <option value="@pagina.IdPagina" @(idPagina == pagina.IdPagina ? "selected" : "")>@pagina.DescricaoPagina</option>
-                                }
-                            </select>
-
-                        </div>
-                    }
-
-                    @if (idPagina != null)
-                    {
-                        <div class="form-col mt-3">
-
-                            <div class="col-4">
-
-                                <label>Ação</label>
-                                <input type="text" name="codigoAcao" id="idAcao" value="@acao.CodigoAcao" class="form-control" />
-                                <label class="mt-2">Caption</label>
-                                <input type="text" name="caption" id="idAcao" value="@acao.Caption" class="form-control" />
-                                <label class="mt-2">Procedure</label>
-                                <input type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" class="form-control mb-3" />
-
-                            </div>
+                            <label>Ação</label>
+                            <input type="text" name="codigoAcao" id="idAcao" value="@acao.CodigoAcao" class="form-control" />
+                            <label class="mt-2">Caption</label>
+                            <input type="text" name="caption" id="idAcao" value="@acao.Caption" class="form-control" />
+                            <label class="mt-2">Procedure</label>
+                            <input type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" class="form-control mb-3" />
 
                         </div>
+
+                    </div>
+                }
+
+                <div class="justify-content-end mx-8 pt-3">
+                    @if (view == View.New)
+                    {
+                        @PageHelper.BtnLimpar()
+                        @PageHelper.MakeBotao(botoes, "I")
                     }
 
                 </div>
-            }
 
-            @if (view == View.Edit)
-            {
-                <input type="hidden" name="idAcao" id="idAcao" value="@acao.IdAcao" />
+            </div>
+        }
 
-                <div class="col-6">
+        @if (view == View.Edit)
+        {
+            <input type="hidden" name="idAcao" id="idAcao" value="@acao.IdAcao" />
 
-                    <label class="mt-4">Sistema</label>
-                    <select name="idSistema" class="form-control">
-                        <option></option>
-                        @foreach (Sistema sistema in sistemas)
-                        {
-                            <option value="@sistema.IdSistema">@sistema.DescricaoSistema</option>
-                        }
-                    </select>
+            <div class="col-6">
 
-                    <label class="mt-2">Modulo</label>
-                    <select name="idModulo" class="form-control">
-                        <option></option>
-                        @foreach (Modulo modulo in modulos)
-                        {
-                            <option value="@modulo.IdModulo">@modulo.DescricaoModulo</option>
-                        }
-                    </select>
+                <label class="mt-4">Sistema</label>
+                <select name="idSistema" class="form-control">
+                    <option></option>
+                    @foreach (Sistema sistema in sistemas)
+                    {
+                        <option value="@sistema.IdSistema">@sistema.DescricaoSistema</option>
+                    }
+                </select>
 
-                    <label class="mt-2">Descrição Página</label>
-                    <select name="idPagina" class="form-control">
-                        <option></option>
-                        @foreach (Pagina pagina in paginas)
-                        {
-                            <option value="@pagina.IdPagina">@pagina.DescricaoPagina</option>
-                        }
-                    </select>
+                <label class="mt-2">Modulo</label>
+                <select name="idModulo" class="form-control">
+                    <option></option>
+                    @foreach (Modulo modulo in modulos)
+                    {
+                        <option value="@modulo.IdModulo">@modulo.DescricaoModulo</option>
+                    }
+                </select>
 
-                </div>
+                <label class="mt-2">Descrição Página</label>
+                <select name="idPagina" class="form-control">
+                    <option></option>
+                    @foreach (Pagina pagina in paginas)
+                    {
+                        <option value="@pagina.IdPagina">@pagina.DescricaoPagina</option>
+                    }
+                </select>
 
-
-                <div class="col-6">
-                    <label class="mt-2">Código Ação</label>
-                    <input class="form-control" type="text" name="codigoAcao" id="codigoAcao" value="@acao.CodigoAcao" />
-                    <label class="mt-2">Caption</label>
-                    <input class="form-control" type="text" name="caption" id="idAcao" value="@acao.Caption" />
-                    <label class="mt-2">Procedure</label>
-                    <input class="form-control mb-5" type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" />
-                </div>
-            }
+            </div>
 
 
-        </div>
+            <div class="col-6">
+                <label>Código Ação</label>
+                <input class="form-control" type="text" name="codigoAcao" id="codigoAcao" value="@acao.CodigoAcao" />
+                <label class="mt-2">Caption</label>
+                <input class="form-control" type="text" name="caption" id="idAcao" value="@acao.Caption" />
+                <label class="mt-2">Procedure</label>
+                <input class="form-control" type="text" name="nomeProcedure" id="idAcao" value="@acao.NomeProcedure" />
+            </div>
+
+            <div class="justify-content-end mx-8 mt-3 mb-4">
+                @if (view == View.Edit)
+                {
+                    @PageHelper.MakeBotao(botoes, "A")
+                    @PageHelper.MakeBotao(botoes, "E")
+                    @PageHelper.BtnLimpar()
+                }
+            </div>
+        }
+
+
+    </div>
 
     </form>
 

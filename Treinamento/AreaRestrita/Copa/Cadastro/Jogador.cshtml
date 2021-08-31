@@ -164,6 +164,7 @@
 }
 
 @{
+    
     AlimentaVariaveis();
 
     if (acao == "I" || acao == "A" || acao == "E")
@@ -190,7 +191,7 @@
         <div class="container">
             @PageHelper.MakeAlert()
 
-            <div class="header-body mt-md-5">
+            <div class="header-body mt-2">
 
                 <div class="header-body">
 
@@ -210,22 +211,22 @@
                                 <input type="hidden" name="idJogador" />
                                 if (jogadores != null)
                                 {
-                                    <div class="col-12 d-flex justify-content-center">
-                                        <button class="btn btn-terciary mr-3" type="button" onclick="estadoInicial()">Limpar</button>
+                                    <div class="mt-2">
 
                                         @if (botoes.Any(x => x.CodigoAcao == "I"))
                                         {
+                                            @PageHelper.BtnLimpar()
                                             <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Adicionar novo</button>
                                         }
                                     </div>
 
-                                    <table class="table table-bordered border-0 mt-md-4">
+                                    <table class="table table-borderless mt-3">
 
                                         <thead>
                                             <tr>
-                                                <th>Id</th>
-                                                <th>Jogador</th>
-                                                <th>Time</th>
+                                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                                                <th scope="col" class="border-start border-end border-bottom border-top">Jogador</th>
+                                                <th scope="col" class="border-start border-end border-bottom border-top">Time</th>
                                             </tr>
                                         </thead>
 
@@ -233,13 +234,13 @@
                                             @foreach (Jogador item in jogadores)
                                             {
                                                 <tr>
-                                                    <td>@item.IdJogador</td>
-                                                    <td>@item.Nome</td>
-                                                    <td>@item.NomeTime</td>
+                                                    <td scope="row" class="border-start border-end border-bottom">@item.IdJogador</td>
+                                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.Nome</td>
+                                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.NomeTime</td>
                                                     <td class="border-0">
                                                         @if (botoes.Any(x => x.CodigoAcao == "A" || x.CodigoAcao == "E"))
                                                         {
-                                                            <button class="btn btn-secondary" type="button" onclick="editar(@item.IdJogador)">Editar</button>
+                                                            <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdJogador)">Editar</button>
                                                         }
                                                     </td>
                                                 </tr>
@@ -247,14 +248,6 @@
                                         </tbody>
                                     </table>
                                 }
-                            }
-
-                            @if (view == View.Edit)
-                            {
-                                <div class="col-12 d-flex justify-content-center mt-3">
-                                    @PageHelper.MakeBotao(botoes, "A")
-                                    @PageHelper.MakeBotao(botoes, "E")
-                                </div>
                             }
 
                         </div>
@@ -279,7 +272,7 @@
                                             ConsultaTimes();
                                         }
 
-                                        <select class="form-control mt-3" name="idTime">
+                                        <select class="form-select mt-3" name="idTime">
                                             <option>Selecione o time...</option>
                                             @foreach (Time time in times)
                                             {
@@ -288,12 +281,12 @@
                                         </select>
                                     </div>
 
+                                    <div class="mx-8 mt-3">
+                                         @PageHelper.MakeBotao(botoes, "A")
+                                         @PageHelper.MakeBotao(botoes, "E")
+                                         @PageHelper.BtnLimpar()
+                                    </div>
 
-                                </div>
-
-                                <div class="col-12 d-flex justify-content-center mt-3">
-                                    @PageHelper.MakeBotao(botoes, "I")
-                                    <button class="btn btn-terciary mr-3" type="button" onclick="estadoInicial()">Limpar</button>
                                 </div>
                             </div>
                         }

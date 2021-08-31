@@ -40,7 +40,6 @@
     {
         acao = null;
         idTime = null;
-        time = null;
     }
 
     private string GetNomeProcedure(string acao)
@@ -153,88 +152,93 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-        <div class="container">
-            @PageHelper.MakeAlert()
+    <div class="container">
+        @PageHelper.MakeAlert()
 
-            <div class="header mt-md-5">
-                <div class="header-body">
-                    <div class="row">
-                        <div class="col">
-                            <!-- Pretitle -->
-                            <!-- Title -->
-                            <h2 class="header-title">
-                                @Page.Title
-                            </h2>
-                        </div>
-                        <div class="col">
-                            @if (view == View.Index)
-                            {
-                                if (botoes.Any(x => x.CodigoAcao == "I"))
-                                {
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Adicionar novo</button>
-                                }
-                            }
-
-                            @if (view == View.New)
-                            {
-                                @PageHelper.MakeBotao(botoes, "I")
-                            }
-
-
-                            @if (view == View.Edit)
-                            {
-                                @PageHelper.MakeBotao(botoes, "A")
-                                @PageHelper.MakeBotao(botoes, "E")
-                            }
-
-                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
-                        </div>
+        <div class="header mt-3">
+            <div class="header-body">
+                <div class="row">
+                    <div class="col">
+                        <h2 class="header-title">
+                            @Page.Title
+                        </h2>
                     </div>
+
                 </div>
             </div>
+        </div>
+
+        <div class="mt-2">
 
             @if (view == View.Index)
             {
-                <input type="hidden" name="idTime" />
-
-                if (times != null)
+                if (botoes.Any(x => x.CodigoAcao == "I"))
                 {
-                    <table class="table table-borderless mt-3">
-                        <thead>
-                            <tr>
-                                <th scope="col"  class="border-start border-end border-bottom border-top">Id</th>
-                                <th scope="col"  class="border-start border-end border-bottom border-top">Nome</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (Time item in times)
-                            {
-                                <tr>
-                                    <td scope="row"  class="border-start border-end border-bottom border-top">@item.IdTime</td>
-                                    <td scope="row"  class="border-start border-end border-bottom border-top">@item.Nome</td>
-                                    <td scope="row" class="border-0">
-                                        @if (botoes.Any(x => x.CodigoAcao == "A" || x.CodigoAcao == "E"))
-                                        {
-                                            <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdTime)">Editar</button>
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                    @PageHelper.BtnLimpar()
+                    <button class="btn btn-secondary" type="button" onclick="executarAcao('new')">Adicionar novo</button>
                 }
             }
-
-            @if (view == View.New || view == View.Edit)
-            {
-                <input type="hidden" name="idTime" id="idTime" value="@time.IdTime" />
-
-                <div class="col-3 mt-2 form-group">
-                    <input class="form-control" placeholder="Nome" type="text" name="nome" id="nome" value="@time.Nome" />
-                </div>
-            }
-
         </div>
+
+        @if (view == View.Index)
+        {
+            <input type="hidden" name="idTime" />
+
+            if (times != null)
+            {
+                <table class="table table-borderless mt-3">
+                    <thead>
+                        <tr>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Nome</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (Time item in times)
+                        {
+                            <tr>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.IdTime</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.Nome</td>
+                                <td scope="row" class="border-0">
+                                    @if (botoes.Any(x => x.CodigoAcao == "A" || x.CodigoAcao == "E"))
+                                    {
+                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdTime)">Editar</button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+
+        @if (view == View.New || view == View.Edit)
+        {
+            <input type="hidden" name="idTime" id="idTime" value="@time.IdTime" />
+
+            <div class="col-3 mt-2 form-group">
+                <input class="form-control" placeholder="Nome" type="text" name="nome" id="nome" value="@time.Nome" />
+            </div>
+
+            <div class="justify-content-end mx-8 mt-3">
+                @if (view == View.New)
+                {
+                    @PageHelper.BtnLimpar()
+                    @PageHelper.MakeBotao(botoes, "I")
+                }
+            </div>
+
+            <div class="justify-content-end mx-8 mt-3">
+                @if (view == View.Edit)
+                {
+                    @PageHelper.MakeBotao(botoes, "A")
+                    @PageHelper.MakeBotao(botoes, "E")
+                    @PageHelper.BtnLimpar()
+                }
+            </div>
+        }
+
+    </div>
     </form>
     <script src="~/Scripts/Scripts.js"></script>
     <script>

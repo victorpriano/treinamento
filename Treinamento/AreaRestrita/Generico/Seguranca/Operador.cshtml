@@ -168,106 +168,111 @@
 
         @RenderPage("~/AreaRestrita/Menu.cshtml")
 
-        <div class="container">
-            @PageHelper.MakeAlert()
+    <div class="container">
+        @PageHelper.MakeAlert()
 
-            <div class="header mt-md-5">
+        <div class="header mt-3">
 
-                <div class="header-body">
+            <div class="header-body">
 
-                    <div class="row m-xxl-5">
+                <div class="row">
 
-                        <div class="col">
+                    <div class="col">
 
-                            <h4 class="header-pretitle mt-4">
-                                @Page.Title
-                            </h4>
-
-                        </div>
-
-                        <div class="col">
-
-                            @if (view == View.Index)
-                            {
-                                if (botoes.Any(x => x.CodigoAcao == "I"))
-                                {
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('I')" onchange="recarregarPagina()">Incluir</button>
-                                }
-                            }
-
-                            @if (view == View.New)
-                            {
-                                if (botoes.Any(x => x.CodigoAcao == "I"))
-                                {
-                                    <button class="btn btn-secondary" type="button" onclick="executarAcao('I')" onchange="recarregarPagina()">Incluir</button>
-                                }
-                            }
-
-                            @if (view == View.Edit)
-                            {
-                                @PageHelper.MakeBotao(botoes, "A")
-                                @PageHelper.MakeBotao(botoes, "E")
-                            }
-                            <button class="btn btn-light" type="button" onclick="estadoInicial()">Limpar</button>
-
-                        </div>
+                        <h4 class="header-pretitle">
+                            @Page.Title
+                        </h4>
 
                     </div>
-
                 </div>
 
             </div>
 
+        </div>
+
+        <div class="mt-2">
+
             @if (view == View.Index)
             {
-                <input type="hidden" name="idOperador" id="idOperador" />
-
-                if (operadores != null)
+                if (botoes.Any(x => x.CodigoAcao == "I"))
                 {
-                    <table class="table table-borderless mt-3">
-
-                        <thead>
-                            <tr>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Nome</th>
-                                <th scope="col" class="border-start border-end border-bottom border-top">Cpf</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            @foreach (Operador item in operadores)
-                            {
-                                <tr>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.IdOperador</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.Nome</td>
-                                    <td scope="row" class="border-start border-end border-bottom border-top">@item.Cpf</td>
-                                    <td scope="row" class="border-0">
-                                        <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdOperador)">Editar</button>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-
-                    </table>
+                    @PageHelper.BtnLimpar()
+                    <button class="btn btn-secondary" type="button" onclick="executarAcao('I')" onchange="recarregarPagina()">Adicionar novo</button>
                 }
             }
 
-            @if (view == View.New || view == View.Edit)
-            {
-                <input type="hidden" name="idOperador" id="idOperador" value="@operador.IdOperador" />
-
-                <div class="form-col mt-2 w-25">
-
-                    <label>Nome</label>
-                    <input type="text" name="nome" id="idOperador" value="@operador.Nome" class="form-control" />
-                    <label class="mt-2">CPF</label>
-                    <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" class="form-control" />
-
-                </div>
-
-            }
-
         </div>
+
+        @if (view == View.Index)
+        {
+            <input type="hidden" name="idOperador" id="idOperador" />
+
+            if (operadores != null)
+            {
+                <table class="table table-borderless mt-3">
+
+                    <thead>
+                        <tr>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Id</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Nome</th>
+                            <th scope="col" class="border-start border-end border-bottom border-top">Cpf</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (Operador item in operadores)
+                        {
+                            <tr>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.IdOperador</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.Nome</td>
+                                <td scope="row" class="border-start border-end border-bottom border-top">@item.Cpf</td>
+                                <td scope="row" class="border-0">
+                                    <button class="btn btn-secondary btn-sm" type="button" onclick="editar(@item.IdOperador)">Editar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+
+                </table>
+            }
+        }
+
+        @if (view == View.New || view == View.Edit)
+        {
+            <input type="hidden" name="idOperador" id="idOperador" value="@operador.IdOperador" />
+
+            <div class="form-col mt-2 w-25">
+
+                <label>Nome</label>
+                <input type="text" name="nome" id="idOperador" value="@operador.Nome" class="form-control" />
+                <label class="mt-2">CPF</label>
+                <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" class="form-control" />
+
+            </div>
+
+            <div class="justify-content-end mx-8 mt-3">
+                @if (view == View.New)
+                {
+                    if (botoes.Any(x => x.CodigoAcao == "I"))
+                    {
+                        @PageHelper.BtnLimpar()
+                        <button class="btn btn-secondary" type="button" onclick="executarAcao('I')" onchange="recarregarPagina()">Incluir</button>
+                    }
+                }
+            </div>
+
+            <div class="justify-content-end mx-8 mt-3">
+                @if (view == View.Edit)
+                {
+                    @PageHelper.MakeBotao(botoes, "A")
+                    @PageHelper.MakeBotao(botoes, "E")
+                    @PageHelper.BtnLimpar()
+                }
+            </div>
+
+        }
+
+    </div>
 
     </form>
 
