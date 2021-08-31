@@ -19,6 +19,7 @@
         public string IdOperador { get; set; }
         public string Cpf { get; set; }
         public string Nome { get; set; }
+        public string Senha { get; set; }
 
     }
 
@@ -28,6 +29,7 @@
     string acao = null;
     string cpf = null;
     string nome = null;
+    string senha = null;
     Operador operador = null;
     List<Operador> operadores = null;
     List<Botao> botoes = null;
@@ -39,6 +41,7 @@
         idOperador = Util.ChecaNulo(Request.Form["idOperador"]);
         nome = Util.ChecaNulo(Request.Form["nome"]);
         cpf = Util.ChecaNulo(Request.Form["cpf"]);
+        senha = Util.ChecaNulo(Request.Form["senha"]);
     }
 
     private void LimpaVariaveis()
@@ -247,6 +250,8 @@
                 <input type="text" name="nome" id="idOperador" value="@operador.Nome" class="form-control" />
                 <label class="mt-2">CPF</label>
                 <input type="text" name="cpf" id="idOperador" value="@operador.Cpf" class="form-control" />
+                <label class="mt-2">Senha</label>
+                <input type="password" name="senha" id="idOperador" value="@operador.Senha" class="form-control" />
 
             </div>
 
